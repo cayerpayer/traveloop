@@ -5,7 +5,13 @@
 
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const configuredApiUrl = import.meta.env.VITE_API_URL?.trim();
+const API_URL =
+  configuredApiUrl || (import.meta.env.DEV ? 'http://localhost:5000/api' : '');
+
+if (!API_URL) {
+  throw new Error('Missing VITE_API_URL. Set it to the deployed backend API URL.');
+}
 
 const api = axios.create({
   baseURL: API_URL,
