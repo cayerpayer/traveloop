@@ -1,52 +1,93 @@
 # 🌍 Traveloop
 
-> AI-powered travel planning SaaS platform — Plan extraordinary journeys.
+> A modern travel planning web application built for seamless trip organization.
 
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite)](https://vite.dev)
-[![Express](https://img.shields.io/badge/Express-5-000000?logo=express)](https://expressjs.com)
-[![MongoDB](https://img.shields.io/badge/MongoDB-8-47A248?logo=mongodb)](https://mongodb.com)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)](https://vite.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com)
+[![React Router](https://img.shields.io/badge/React_Router-CA4245?logo=react-router)](https://reactrouter.com)
+[![Render](https://img.shields.io/badge/Render-46E3B7?logo=render)](https://render.com)
 
-## Features
+## ✨ Features
 
-- 🗺️ **Smart Itinerary Builder** — Day-by-day trip planning with morning/afternoon/evening slots
-- 💰 **Budget Dashboard** — Track expenses with visual analytics (pie, bar, line charts)
-- 📝 **Travel Journal** — Rich notes with mood tracking and city tags
-- 🎒 **Packing Checklist** — Smart packing with progress tracking
-- 🏙️ **City & Activity Search** — Discover destinations and activities
-- 👤 **User Profile** — Preferences, achievements, and passport tracker
-- 🔗 **Shared Itineraries** — Public trip sharing with reactions and comments
-- 🔐 **Authentication** — Secure login/signup with form validation
+- 🗺️ **Itinerary Builder** — Plan day-by-day trips with activity scheduling
+- 🔍 **Activity Discovery** — Search and add activities to your itinerary
+- 💰 **Budget Interface** — Track trip expenses with visual charts
+- 📱 **Responsive Design** — Works seamlessly on desktop and mobile
+- 🧭 **Trip Planning Flow** — Complete workflow from trip creation to itinerary
+- 🔄 **Local State Management** — Persistent trip data using browser storage
 
-## Quick Start
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
 
 ```bash
-# 1. Clone the repository
+# Clone the repository
 git clone https://github.com/your-org/traveloop.git
 cd traveloop
 
-# 2. Install all dependencies
-npm run install:all
+# Install frontend dependencies
+cd frontend
+npm install
 
-# 3. Start development (frontend + backend)
+# Start development server
 npm run dev
 ```
 
-Frontend runs on `http://localhost:5173`  
-Backend runs on `http://localhost:5000`
+The application will be available at `http://localhost:5173`
 
-## Project Structure
+## 🏗️ Project Structure
 
 ```
 traveloop/
-├── frontend/     # React + Vite client (Bootstrap, Recharts)
-├── backend/      # Express + MongoDB REST API
-├── docs/         # Architecture documentation
-├── package.json  # Monorepo scripts
-└── README.md     # This file
+├── frontend/          # React application
+│   ├── src/
+│   │   ├── components/  # Reusable UI components
+│   │   ├── pages/       # Page components
+│   │   ├── context/     # React context providers
+│   │   ├── hooks/       # Custom React hooks
+│   │   └── services/    # API service functions
+│   ├── public/          # Static assets
+│   └── package.json
+├── backend/            # Express.js API (planned)
+├── docs/              # Documentation
+└── README.md
 ```
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full folder structure.
+## 🛠️ Tech Stack
+
+### Frontend
+- **React 18** — UI framework with hooks
+- **Vite** — Fast build tool and dev server
+- **Tailwind CSS** — Utility-first CSS framework
+- **React Router** — Client-side routing
+- **Local Storage** — Client-side data persistence
+
+### Deployment
+- **Render** — Frontend hosting and deployment
+
+## 👥 Team
+
+- **Digvijay Pawar** — Team Leader & Frontend Developer
+- **Ashok Kumar Sah** — Backend & Frontend Developer
+- **Purvesh Patil** — Frontend Developer
+
+## 🔮 Future Improvements
+
+- Backend API integration with Express.js
+- PostgreSQL database for data persistence
+- User authentication and account management
+- Real-time collaboration features
+- Mobile app development
+- Integration with external travel APIs
+
+## 📄 License
+
+This project is part of a hackathon submission and is not licensed for commercial use.
 
 ## Scripts
 
