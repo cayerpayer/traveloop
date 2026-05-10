@@ -1,7 +1,7 @@
 /* ============================================
    ItineraryBuilderPage — Day-wise planner
    ============================================ */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useTrips } from '../../context/TripContext';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
@@ -29,6 +29,16 @@ export default function ItineraryBuilderPage() {
   const [expandedDay, setExpandedDay] = useState(1);
   const [showActivityPicker, setShowActivityPicker] = useState(null); // { day, slot }
   const [activitySearch, setActivitySearch] = useState('');
+
+  // Reload itinerary when trip changes (e.g., after adding activities from ActivitySearchPage)
+  useEffect(() => {
+    if (plannerTrip) {
+      const freshItinerary = getOrCreateItineraryForTrip(plannerTrip);
+      if (freshItinerary) {
+        setItinerary(freshItinerary);
+      }
+    }
+  }, [plannerTrip?.id]);
 
   const saveItinerary = useCallback((updated) => {
     setItinerary(updated);

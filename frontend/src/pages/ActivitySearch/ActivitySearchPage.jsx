@@ -37,7 +37,8 @@ export default function ActivitySearchPage() {
   const addedActivityIds = useMemo(() => {
     void itineraryVersion;
     if (!selectedTrip) return [];
-    return getActivityIdsForItinerary(getOrCreateItineraryForTrip(selectedTrip));
+    const itinerary = getOrCreateItineraryForTrip(selectedTrip);
+    return itinerary ? getActivityIdsForItinerary(itinerary) : [];
   }, [selectedTrip, itineraryVersion]);
 
   const toggleSave = (id) => {
@@ -49,7 +50,8 @@ export default function ActivitySearchPage() {
 
   const handleTripChange = (tripId) => {
     setActiveTripId(tripId);
-    setItineraryVersion((version) => version + 1);
+    // Force itinerary load for the new trip
+    setTimeout(() => setItineraryVersion((version) => version + 1), 0);
   };
 
   const handleAddActivity = (activity, closeModal = false) => {
@@ -62,17 +64,31 @@ export default function ActivitySearchPage() {
     }
 
     setActiveTripId(trip.id);
-    const result = addActivityToTripItinerary({ trip, activity });
+    
+    try {
+      const result = addActivityToTripItinerary({ trip, activity });
 
-    if (!result.added) {
-      toast.error(result.reason === 'duplicate' ? 'Already added to this itinerary' : 'Select a trip first');
-      return;
+      if (!result.added) {
+        toast.error(result.reason === 'duplicate' ? 'Already added to this itinerary' : 'Could not add activity');
+        return;
+      }
+
+      // Update trip summary for consistency
+      addActivityToTripSummary(trip.id, result.activity);
+      
+      // Force UI refresh of added activities
+      setItineraryVersion((version) => version + 1);
+      
+      // Close modal if requested (with small delay to ensure state updates)
+      if (closeModal) {
+        setTimeout(() => setSelectedActivity(null), 100);
+      }
+      
+      toast.success(`✓ Added to ${trip.tripName}`);
+    } catch (error) {
+      console.error('Error adding activity:', error);
+      toast.error('Failed to add activity');
     }
-
-    addActivityToTripSummary(trip.id, result.activity);
-    setItineraryVersion((version) => version + 1);
-    if (closeModal) setSelectedActivity(null);
-    toast.success(`Added to ${trip.tripName}`);
   };
 
   const isAdded = (activityId) => addedActivityIds.includes(activityId);
