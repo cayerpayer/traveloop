@@ -4,6 +4,14 @@
 
 ## Live Site Link : https://traveloop-bxvi.onrender.com
 
+## Problem Statement
+
+Planning a multi-city trip can quickly become complicated. Travelers often need to manage destinations, activities, budgets, schedules, and travel notes across multiple platforms or scattered documents. This makes trip planning time-consuming, disorganized, and difficult to manage efficiently.
+
+## Solution
+
+Traveloop simplifies travel planning through a centralized and interactive platform where users can organize trips, build itineraries, explore activities, and manage travel budgets in one place. The platform is designed to provide a smooth and user-friendly planning experience for travelers preparing personalized multi-city journeys.
+
 [![React](https://img.shields.io/badge/React-18-61DAFB?logo=react)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)](https://vite.dev)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com)
@@ -129,6 +137,10 @@ JWT_SECRET=your_secret_key
 JWT_EXPIRE=30d
 NODE_ENV=development
 ```
+📞 Contact & Support
+
+Team Leader: Digvijay Pawar
+Email: digvijaypawar247@gmail.com
 
 ## License
 
