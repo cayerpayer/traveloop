@@ -2,9 +2,10 @@
    ItineraryViewPage — Beautiful trip visualization
    ============================================ */
 import { useState } from 'react';
+import { useTrips } from '../../context/TripContext';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
 import EmptyState from '../../components/Shared/EmptyState';
-import { getItem, STORAGE_KEYS } from '../../utils/localStorage';
+import { getItineraries, getItineraryForTripId } from '../../utils/itineraryStorage';
 import { CITIES_DATA } from '../../data/mockData';
 import toast from 'react-hot-toast';
 import './ItineraryViewPage.css';
@@ -17,9 +18,11 @@ const VIEW_MODES = [
 ];
 
 export default function ItineraryViewPage() {
+  const { trips, activeTrip } = useTrips();
   const [viewMode, setViewMode] = useState('timeline');
-  const itineraries = getItem(STORAGE_KEYS.ITINERARIES, []);
-  const itinerary = itineraries[0] || null;
+  const selectedTrip = activeTrip || trips[0] || null;
+  const itineraries = getItineraries();
+  const itinerary = (selectedTrip && getItineraryForTripId(selectedTrip.id)) || itineraries[0] || null;
 
   const handleExport = () => toast.success('PDF export coming soon!');
   const handleShare = () => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied!'); };

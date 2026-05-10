@@ -5,6 +5,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { getItem, setItem, STORAGE_KEYS } from '../utils/localStorage';
 
 const TripContext = createContext(null);
 const STORAGE_KEY = 'traveloop_trips';
@@ -72,11 +73,18 @@ function loadTrips() {
 
 export function TripProvider({ children }) {
   const [trips, setTrips] = useState(() => loadTrips());
+  const [activeTripId, setActiveTripIdState] = useState(() => getItem(STORAGE_KEYS.ACTIVE_TRIP_ID, null));
+  const resolvedActiveTripId = trips.some((trip) => trip.id === activeTripId) ? activeTripId : trips[0]?.id || null;
 
   // Persist to localStorage on every change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(trips));
   }, [trips]);
+
+  const setActiveTripId = useCallback((id) => {
+    setActiveTripIdState(id);
+    setItem(STORAGE_KEYS.ACTIVE_TRIP_ID, id);
+  }, []);
 
   const addTrip = useCallback((tripData) => {
     const newTrip = {
@@ -88,22 +96,66 @@ export function TripProvider({ children }) {
       status: tripData.status || 'planning',
     };
     setTrips((prev) => [newTrip, ...prev]);
+    setActiveTripId(newTrip.id);
     return newTrip;
-  }, []);
+  }, [setActiveTripId]);
 
   const updateTrip = useCallback((id, updates) => {
     setTrips((prev) => prev.map((t) => (t.id === id ? { ...t, ...updates } : t)));
   }, []);
 
   const deleteTrip = useCallback((id) => {
-    setTrips((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+    const nextTrips = trips.filter((t) => t.id !== id);
+    setTrips(nextTrips);
+
+    if (resolvedActiveTripId === id) {
+      setActiveTripId(nextTrips[0]?.id || null);
+    }
+  }, [resolvedActiveTripId, setActiveTripId, trips]);
 
   const getTripById = useCallback((id) => {
     return trips.find((t) => t.id === id) || null;
   }, [trips]);
 
-  const value = { trips, addTrip, updateTrip, deleteTrip, getTripById };
+  const getActiveTrip = useCallback(() => {
+    return trips.find((trip) => trip.id === resolvedActiveTripId) || trips[0] || null;
+  }, [resolvedActiveTripId, trips]);
+
+  const addActivityToTripSummary = useCallback((tripId, activity) => {
+    if (!tripId || !activity) return;
+
+    setTrips((prev) => prev.map((trip) => {
+      if (trip.id !== tripId) return trip;
+
+      const activities = trip.activities || [];
+      const activityDetails = trip.activityDetails || [];
+      const hasSummary = activities.some((item) =>
+        typeof item === 'string'
+          ? item.toLowerCase() === activity.name.toLowerCase()
+          : item.id === activity.id
+      );
+      const hasDetails = activityDetails.some((item) => item.id === activity.id);
+
+      return {
+        ...trip,
+        activities: hasSummary ? activities : [...activities, activity.name],
+        activityDetails: hasDetails ? activityDetails : [...activityDetails, activity],
+      };
+    }));
+  }, []);
+
+  const value = {
+    trips,
+    activeTripId: resolvedActiveTripId,
+    activeTrip: getActiveTrip(),
+    setActiveTripId,
+    addTrip,
+    updateTrip,
+    deleteTrip,
+    getTripById,
+    getActiveTrip,
+    addActivityToTripSummary,
+  };
 
   return <TripContext.Provider value={value}>{children}</TripContext.Provider>;
 }

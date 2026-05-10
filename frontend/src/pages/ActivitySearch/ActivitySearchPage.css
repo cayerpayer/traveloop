@@ -3,6 +3,21 @@
 .as-title { font-family: var(--font-primary); font-size: var(--fs-3xl); font-weight: 800; margin-bottom: 0.5rem; }
 .as-subtitle { font-family: var(--font-secondary); color: var(--color-light-dim); }
 
+.as-trip-select-wrap {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  width: min(720px, 100%); margin: 0 auto 1.5rem; padding: 0.9rem 1rem;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-xl);
+}
+.as-trip-select-wrap > div { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+.as-trip-label { font-family: var(--font-secondary); font-size: 0.72rem; color: var(--color-light-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.as-trip-select-wrap strong { font-family: var(--font-primary); font-size: 0.95rem; color: var(--color-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.as-trip-select {
+  min-width: 220px; padding: 0.65rem 0.85rem; border-radius: var(--radius-lg);
+  border: 1px solid rgba(255,255,255,0.12); background: rgba(15,23,42,0.88);
+  color: var(--color-light); font-family: var(--font-secondary); font-size: 0.85rem;
+}
+
 /* AI Banner */
 .as-ai-banner {
   display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem;
@@ -40,6 +55,13 @@
 .as-price { font-family: var(--font-primary); font-size: 1.25rem; font-weight: 700; color: var(--color-light); }
 .as-add-btn { padding: 0.5rem 1rem; border-radius: var(--radius-lg); background: rgba(79,70,229,0.15); border: 1px solid rgba(79,70,229,0.25); color: var(--color-primary-light); font-family: var(--font-secondary); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; }
 .as-add-btn:hover { background: rgba(79,70,229,0.3); transform: translateY(-1px); }
+.as-add-btn.added,
+.as-add-btn:disabled {
+  cursor: default; color: #10B981; background: rgba(16,185,129,0.13);
+  border-color: rgba(16,185,129,0.28); transform: none;
+}
+.as-add-btn.added:hover,
+.as-add-btn:disabled:hover { background: rgba(16,185,129,0.13); transform: none; }
 
 /* Detail Modal */
 .as-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
@@ -61,4 +83,6 @@
 
 @media (max-width: 768px) {
   .as-grid { grid-template-columns: 1fr; }
+  .as-trip-select-wrap { align-items: stretch; flex-direction: column; }
+  .as-trip-select { width: 100%; min-width: 0; }
 }

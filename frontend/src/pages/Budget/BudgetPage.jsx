@@ -1,21 +1,41 @@
 /* ============================================
    BudgetPage — Travel finance dashboard
    ============================================ */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useTrips } from '../../context/TripContext';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
 import { BUDGET_CATEGORIES, EXPENSE_TRENDS } from '../../data/mockData';
+import { getDailyActivityCosts, getItineraryActivityCost, getItineraryForTripId } from '../../utils/itineraryStorage';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from 'recharts';
 import './BudgetPage.css';
 
 const COLORS = ['#4F46E5', '#06B6D4', '#F59E0B', '#10B981', '#EC4899', '#8B5CF6'];
 
 export default function BudgetPage() {
+  const { trips, activeTrip } = useTrips();
   const [activeChart, setActiveChart] = useState('pie');
-  const totalBudget = 8500;
-  const totalSpent = BUDGET_CATEGORIES.reduce((s, c) => s + c.amount, 0);
+  const selectedTrip = activeTrip || trips[0] || null;
+  const activeItinerary = selectedTrip ? getItineraryForTripId(selectedTrip.id) : null;
+  const itineraryActivityCost = getItineraryActivityCost(activeItinerary);
+  const totalBudget = selectedTrip?.budget || 8500;
+  const budgetCategories = useMemo(() => {
+    if (!itineraryActivityCost) return BUDGET_CATEGORIES;
+    return BUDGET_CATEGORIES.map((category) =>
+      category.id === 'activities' ? { ...category, amount: itineraryActivityCost } : category
+    );
+  }, [itineraryActivityCost]);
+  const expenseTrends = useMemo(() => {
+    if (!activeItinerary) return EXPENSE_TRENDS;
+
+    const dailyActivityCosts = getDailyActivityCosts(activeItinerary);
+    return EXPENSE_TRENDS.map((day, index) => ({
+      ...day,
+      activities: dailyActivityCosts[index]?.activities || 0,
+    }));
+  }, [activeItinerary]);
+  const totalSpent = budgetCategories.reduce((s, c) => s + c.amount, 0);
   const remaining = totalBudget - totalSpent;
   const dailyAvg = Math.round(totalSpent / 7);
-  const savings = 1200;
   const overBudget = totalSpent > totalBudget;
 
   const summaryCards = [
@@ -25,7 +45,7 @@ export default function BudgetPage() {
     { label: 'Daily Average', value: `$${dailyAvg}`, icon: 'bi-calendar-day', color: '#F59E0B', trend: '~$95/day' },
   ];
 
-  const pieData = BUDGET_CATEGORIES.map(c => ({ name: c.name, value: c.amount }));
+  const pieData = budgetCategories.map(c => ({ name: c.name, value: c.amount }));
 
   const customTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -96,20 +116,20 @@ export default function BudgetPage() {
             )}
             {activeChart === 'bar' && (
               <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={BUDGET_CATEGORIES.map(c => ({ name: c.name, amount: c.amount }))}>
+                <BarChart data={budgetCategories.map(c => ({ name: c.name, amount: c.amount }))}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                   <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 12 }} />
                   <YAxis tick={{ fill: '#94A3B8', fontSize: 12 }} />
                   <Tooltip content={customTooltip} />
                   <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
-                    {BUDGET_CATEGORIES.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
+                    {budgetCategories.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
             )}
             {activeChart === 'line' && (
               <ResponsiveContainer width="100%" height={320}>
-                <LineChart data={EXPENSE_TRENDS}>
+                <LineChart data={expenseTrends}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
                   <XAxis dataKey="day" tick={{ fill: '#94A3B8', fontSize: 12 }} />
                   <YAxis tick={{ fill: '#94A3B8', fontSize: 12 }} />
@@ -126,7 +146,7 @@ export default function BudgetPage() {
 
           {/* Legend */}
           <div className="bp-legend">
-            {BUDGET_CATEGORIES.map((c, i) => (
+            {budgetCategories.map((c, i) => (
               <div key={c.id} className="bp-legend-item">
                 <span className="bp-legend-dot" style={{ background: COLORS[i] }}></span>
                 <span className="bp-legend-name">{c.name}</span>
@@ -140,7 +160,7 @@ export default function BudgetPage() {
         <div className="bp-daywise fade-in-up delay-3">
           <h3 className="cs-section-title"><i className="bi bi-calendar3 me-2"></i>Day-wise Breakdown</h3>
           <div className="bp-daywise-list">
-            {EXPENSE_TRENDS.map((d, i) => {
+            {expenseTrends.map((d, i) => {
               const dayTotal = d.flights + d.hotels + d.food + d.activities + d.transport;
               return (
                 <div key={i} className="bp-day-row">

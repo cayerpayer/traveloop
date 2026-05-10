@@ -675,6 +675,22 @@
   font-size: 0.72rem;
 }
 
+.mtp-detail-section {
+  margin-top: 1.25rem;
+}
+
+.mtp-detail-section h4 {
+  margin: 0;
+  color: var(--color-light);
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.mtp-detail-section h4 i {
+  color: var(--color-accent);
+}
+
 .mtp-edit-form {
   display: flex;
   flex-direction: column;

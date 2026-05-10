@@ -398,6 +398,17 @@ export default function MyTripsPage() {
                   {viewModal.trip.destinations.map((place) => <span key={place}>{place}</span>)}
                 </div>
               )}
+              {viewModal.trip?.activities?.length > 0 && (
+                <div className="mtp-detail-section">
+                  <h4><i className="bi bi-lightning-charge me-2"></i>Planned Activities</h4>
+                  <div className="mtp-detail-chip-row">
+                    {viewModal.trip.activities.map((activity) => {
+                      const label = typeof activity === 'string' ? activity : activity.name;
+                      return <span key={label}>{label}</span>;
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

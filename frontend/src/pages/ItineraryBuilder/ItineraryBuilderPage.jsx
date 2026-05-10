@@ -3,48 +3,51 @@
    ============================================ */
 import { useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useTrips } from '../../context/TripContext';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
 import { CITIES_DATA, ACTIVITIES_DATA } from '../../data/mockData';
-import { getItem, setItem, STORAGE_KEYS } from '../../utils/localStorage';
+import { getOrCreateItineraryForTrip, saveItineraryRecord, buildItineraryDays, ITINERARY_SLOTS } from '../../utils/itineraryStorage';
 import toast from 'react-hot-toast';
 import './ItineraryBuilderPage.css';
 
-const SLOTS = ['Morning', 'Afternoon', 'Evening'];
+const SLOTS = ITINERARY_SLOTS;
 const SLOT_ICONS = { Morning: 'bi-sunrise', Afternoon: 'bi-sun', Evening: 'bi-moon-stars' };
 
-function buildDays(count) {
-  return Array.from({ length: count }, (_, i) => ({
-    id: uuidv4(), day: i + 1, slots: { Morning: [], Afternoon: [], Evening: [] }, notes: '',
-  }));
-}
-
 export default function ItineraryBuilderPage() {
+  const { trips, activeTrip, addActivityToTripSummary } = useTrips();
+  const plannerTrip = activeTrip || trips[0] || null;
   const [itinerary, setItinerary] = useState(() => {
-    const saved = getItem(STORAGE_KEYS.ITINERARIES);
-    if (saved && saved.length > 0) return saved[0];
-    return { id: uuidv4(), title: 'My Trip', cities: ['Bali', 'Tokyo'], days: buildDays(5), budget: 3000, totalDays: 5 };
+    return getOrCreateItineraryForTrip(plannerTrip) || {
+      id: uuidv4(),
+      title: 'My Trip',
+      cities: ['Bali', 'Tokyo'],
+      days: buildItineraryDays(5),
+      budget: 3000,
+      totalDays: 5,
+    };
   });
   const [expandedDay, setExpandedDay] = useState(1);
   const [showActivityPicker, setShowActivityPicker] = useState(null); // { day, slot }
   const [activitySearch, setActivitySearch] = useState('');
-  const [dayCount, setDayCount] = useState(itinerary.totalDays);
 
   const saveItinerary = useCallback((updated) => {
     setItinerary(updated);
-    const all = getItem(STORAGE_KEYS.ITINERARIES, []);
-    const idx = all.findIndex(it => it.id === updated.id);
-    if (idx >= 0) all[idx] = updated; else all.unshift(updated);
-    setItem(STORAGE_KEYS.ITINERARIES, all);
+    saveItineraryRecord(updated);
   }, []);
 
   const addActivityToSlot = (dayNum, slot, activity) => {
+    const alreadyExists = itinerary.days.some(d => Object.values(d.slots).some(activities => activities.some(a => a.id === activity.id)));
+    if (alreadyExists) {
+      toast.error('Already added');
+      return;
+    }
+
     const updated = { ...itinerary, days: itinerary.days.map(d => {
       if (d.day !== dayNum) return d;
-      const exists = d.slots[slot].some(a => a.id === activity.id);
-      if (exists) { toast.error('Already added'); return d; }
       return { ...d, slots: { ...d.slots, [slot]: [...d.slots[slot], { ...activity, slotId: uuidv4() }] } };
     })};
     saveItinerary(updated);
+    if (plannerTrip) addActivityToTripSummary(plannerTrip.id, activity);
     setShowActivityPicker(null);
     toast.success(`Added to ${slot}`);
   };
@@ -66,7 +69,6 @@ export default function ItineraryBuilderPage() {
     const newDay = { id: uuidv4(), day: itinerary.days.length + 1, slots: { Morning: [], Afternoon: [], Evening: [] }, notes: '' };
     const updated = { ...itinerary, days: [...itinerary.days, newDay], totalDays: itinerary.days.length + 1 };
     saveItinerary(updated);
-    setDayCount(updated.totalDays);
   };
 
   const totalCost = itinerary.days.reduce((sum, d) => {

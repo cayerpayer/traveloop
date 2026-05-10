@@ -56,5 +56,6 @@ export const STORAGE_KEYS = {
   PROFILE: 'traveloop_profile',
   SAVED_CITIES: 'traveloop_saved_cities',
   SAVED_ACTIVITIES: 'traveloop_saved_activities',
+  ACTIVE_TRIP_ID: 'traveloop_active_trip_id',
   BUDGET: 'traveloop_budget',
 };
