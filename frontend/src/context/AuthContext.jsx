@@ -127,7 +127,65 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(STORAGE_KEYS.REMEMBER);
   }, []);
 
-  const value = { user, loading, login, signup, logout };
+  /**
+   * updatePassword — updates user password
+   */
+  const updatePassword = useCallback(async (oldPassword, newPassword) => {
+    await new Promise((r) => setTimeout(r, 800));
+
+    if (!user) {
+      return { success: false, message: 'Not authenticated' };
+    }
+
+    const db = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS_DB) || '[]');
+    const userRecord = db.find((u) => u.id === user.id);
+
+    if (!userRecord) {
+      return { success: false, message: 'User not found' };
+    }
+
+    if (userRecord.password !== oldPassword) {
+      return { success: false, message: 'Current password is incorrect' };
+    }
+
+    userRecord.password = newPassword;
+    localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(db));
+
+    return { success: true, message: 'Password updated successfully' };
+  }, [user]);
+
+  /**
+   * deleteAccount — permanently deletes user account and all data
+   */
+  const deleteAccount = useCallback(async () => {
+    await new Promise((r) => setTimeout(r, 800));
+
+    if (!user) {
+      return { success: false, message: 'Not authenticated' };
+    }
+
+    // Remove user from database
+    const db = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS_DB) || '[]');
+    const filtered = db.filter((u) => u.id !== user.id);
+    localStorage.setItem(STORAGE_KEYS.USERS_DB, JSON.stringify(filtered));
+
+    // Remove user trips
+    const storageKey = `traveloop_trips_${user.id}`;
+    localStorage.removeItem(storageKey);
+
+    // Remove user profile
+    const profileKey = `traveloop_profile_${user.id}`;
+    localStorage.removeItem(profileKey);
+
+    // Clear user session
+    setUser(null);
+    localStorage.removeItem(STORAGE_KEYS.USER);
+    localStorage.removeItem(STORAGE_KEYS.REMEMBER);
+
+    return { success: true, message: 'Account deleted successfully' };
+  }, [user]);
+
+  const value = { user, loading, login, signup, logout, updatePassword, deleteAccount };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

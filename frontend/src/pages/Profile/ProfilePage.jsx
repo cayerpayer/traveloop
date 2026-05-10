@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import useTripStats from '../../hooks/useTripStats';
 import { getItem, setItem, STORAGE_KEYS } from '../../utils/localStorage';
 import toast from 'react-hot-toast';
@@ -21,7 +22,8 @@ const LANGUAGES = ['English', 'Spanish', 'French', 'German', 'Japanese', 'Hindi'
 const CURRENCIES = ['USD ($)', 'EUR (€)', 'GBP (£)', 'JPY (¥)', 'INR (₹)'];
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updatePassword, deleteAccount, logout } = useAuth();
+  const navigate = useNavigate();
   const stats = useTripStats();
   const [profile, setProfile] = useState(() => getItem(STORAGE_KEYS.PROFILE, {
     name: user?.name || 'Demo User',
@@ -36,12 +38,72 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [editing, setEditing] = useState(false);
   const [editData, setEditData] = useState({ ...profile });
+  
+  // Password change modal
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  
+  // Delete account modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const saveProfile = () => {
     setProfile(editData);
     setItem(STORAGE_KEYS.PROFILE, editData);
     setEditing(false);
     toast.success('Profile updated!');
+  };
+
+  const handleChangePassword = async () => {
+    if (!passwordData.oldPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      toast.error('Please fill all fields');
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('Passwords do not match!');
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const result = await updatePassword(passwordData.oldPassword, passwordData.newPassword);
+      if (result.success) {
+        toast.success('Password updated successfully!');
+        setShowPasswordModal(false);
+        setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+      } else {
+        toast.error(result.message || 'Failed to update password');
+      }
+    } catch (error) {
+      toast.error('Error updating password');
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteLoading(true);
+    try {
+      const result = await deleteAccount();
+      if (result.success) {
+        toast.success('Account deleted successfully');
+        logout();
+        navigate('/login', { replace: true });
+      } else {
+        toast.error(result.message || 'Failed to delete account');
+      }
+    } catch (error) {
+      toast.error('Error deleting account');
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const savedCities = getItem(STORAGE_KEYS.SAVED_CITIES, []);
@@ -181,7 +243,7 @@ export default function ProfilePage() {
           <div className="pp-section fade-in-up">
             <h3>Account Settings</h3>
             <div className="pp-account-list">
-              <button className="pp-account-item" onClick={() => toast('Password change coming soon!')}>
+              <button className="pp-account-item" onClick={() => setShowPasswordModal(true)}>
                 <i className="bi bi-lock"></i><span>Change Password</span><i className="bi bi-chevron-right"></i>
               </button>
               <button className="pp-account-item" onClick={() => toast('Privacy settings coming soon!')}>
@@ -190,9 +252,95 @@ export default function ProfilePage() {
               <button className="pp-account-item" onClick={() => toast('Data export coming soon!')}>
                 <i className="bi bi-download"></i><span>Export Data</span><i className="bi bi-chevron-right"></i>
               </button>
-              <button className="pp-account-item danger" onClick={() => toast.error('Account deletion is disabled in demo')}>
+              <button className="pp-account-item danger" onClick={() => setShowDeleteModal(true)}>
                 <i className="bi bi-trash3"></i><span>Delete Account</span><i className="bi bi-chevron-right"></i>
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Change Password Modal */}
+        {showPasswordModal && (
+          <div className="pp-modal-overlay" onClick={() => setShowPasswordModal(false)}>
+            <div className="pp-modal" onClick={e => e.stopPropagation()}>
+              <div className="pp-modal-header">
+                <h4>Change Password</h4>
+                <button className="pp-modal-close" onClick={() => setShowPasswordModal(false)}>
+                  <i className="bi bi-x"></i>
+                </button>
+              </div>
+              <div className="pp-modal-body">
+                <div className="pp-field">
+                  <label>Current Password</label>
+                  <input 
+                    type="password" 
+                    placeholder="Enter current password"
+                    value={passwordData.oldPassword}
+                    onChange={e => setPasswordData({ ...passwordData, oldPassword: e.target.value })}
+                    className="pp-input"
+                  />
+                </div>
+                <div className="pp-field">
+                  <label>New Password</label>
+                  <input 
+                    type="password" 
+                    placeholder="Enter new password"
+                    value={passwordData.newPassword}
+                    onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                    className="pp-input"
+                  />
+                </div>
+                <div className="pp-field">
+                  <label>Confirm Password</label>
+                  <input 
+                    type="password" 
+                    placeholder="Confirm new password"
+                    value={passwordData.confirmPassword}
+                    onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                    className="pp-input"
+                  />
+                </div>
+              </div>
+              <div className="pp-modal-footer">
+                <button className="btn-glass" onClick={() => setShowPasswordModal(false)}>Cancel</button>
+                <button 
+                  className="btn-gradient" 
+                  onClick={handleChangePassword}
+                  disabled={passwordLoading}
+                >
+                  {passwordLoading ? 'Updating...' : 'Update Password'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Account Modal */}
+        {showDeleteModal && (
+          <div className="pp-modal-overlay" onClick={() => setShowDeleteModal(false)}>
+            <div className="pp-modal pp-modal-danger" onClick={e => e.stopPropagation()}>
+              <div className="pp-modal-header">
+                <h4>Delete Account</h4>
+                <button className="pp-modal-close" onClick={() => setShowDeleteModal(false)}>
+                  <i className="bi bi-x"></i>
+                </button>
+              </div>
+              <div className="pp-modal-body">
+                <div className="pp-danger-warning">
+                  <i className="bi bi-exclamation-triangle"></i>
+                  <p>This action cannot be undone. Your account and all associated data will be permanently deleted.</p>
+                </div>
+              </div>
+              <div className="pp-modal-footer">
+                <button className="btn-glass" onClick={() => setShowDeleteModal(false)}>Cancel</button>
+                <button 
+                  className="btn-danger" 
+                  onClick={handleDeleteAccount}
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? 'Deleting...' : 'Delete Account'}
+                </button>
+              </div>
             </div>
           </div>
         )}
