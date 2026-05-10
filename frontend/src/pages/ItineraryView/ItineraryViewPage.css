@@ -1,0 +1,81 @@
+.iv-main { padding-top: 100px; padding-bottom: 4rem; }
+
+/* Hero */
+.iv-hero {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-2xl); padding: 2rem; margin-bottom: 2rem;
+  display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;
+}
+.iv-hero-title { font-family: var(--font-primary); font-size: var(--fs-2xl); font-weight: 800; color: var(--color-light); margin-bottom: 0.75rem; }
+.iv-hero-stats { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1rem; }
+.iv-hero-stats span { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-secondary); font-size: 0.85rem; color: var(--color-light-dim); }
+.iv-hero-stats i { color: var(--color-primary-light); }
+.iv-hero-cities { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.iv-city-chip { display: flex; align-items: center; gap: 0.3rem; padding: 0.35rem 0.75rem; background: rgba(79,70,229,0.1); border-radius: var(--radius-full); font-family: var(--font-secondary); font-size: 0.8rem; color: var(--color-light); }
+.iv-hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+/* View Tabs */
+.iv-view-tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; }
+.iv-view-tab {
+  padding: 0.5rem 1.25rem; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04); color: var(--color-light-dim);
+  font-family: var(--font-secondary); font-size: 0.85rem; cursor: pointer;
+  transition: all var(--transition-base);
+}
+.iv-view-tab:hover { background: rgba(255,255,255,0.08); }
+.iv-view-tab.active { background: var(--color-primary); border-color: var(--color-primary); color: white; }
+
+/* Timeline */
+.iv-timeline { position: relative; }
+.iv-timeline-day { display: flex; gap: 1.5rem; margin-bottom: 0; opacity: 0; }
+.iv-tl-connector { display: flex; flex-direction: column; align-items: center; width: 20px; flex-shrink: 0; padding-top: 1.5rem; }
+.iv-tl-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--gradient-primary); flex-shrink: 0; box-shadow: 0 0 10px rgba(79,70,229,0.4); }
+.iv-tl-line { width: 2px; flex: 1; background: rgba(79,70,229,0.2); margin-top: 4px; }
+.iv-tl-content { flex: 1; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1rem; }
+.iv-tl-day-header { margin-bottom: 1rem; }
+.iv-tl-day-badge { padding: 0.3rem 0.75rem; border-radius: var(--radius-full); background: var(--gradient-primary); font-family: var(--font-primary); font-size: 0.75rem; font-weight: 600; color: white; }
+.iv-tl-slot { margin-bottom: 1rem; }
+.iv-tl-slot-label { font-family: var(--font-secondary); font-size: 0.78rem; font-weight: 600; color: var(--color-accent); display: flex; align-items: center; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+.iv-tl-act { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.04); border-radius: var(--radius-lg); margin-bottom: 0.4rem; transition: background 0.2s; }
+.iv-tl-act:hover { background: rgba(255,255,255,0.08); }
+.iv-tl-act-img { width: 48px; height: 48px; border-radius: var(--radius-md); object-fit: cover; }
+.iv-tl-act-info { flex: 1; }
+.iv-tl-act-name { font-family: var(--font-primary); font-size: 0.85rem; font-weight: 600; color: var(--color-light); display: block; }
+.iv-tl-act-meta { display: flex; gap: 0.75rem; margin-top: 0.2rem; }
+.iv-tl-act-meta span { font-family: var(--font-secondary); font-size: 0.72rem; color: var(--color-light-dim); display: flex; align-items: center; gap: 0.25rem; }
+.iv-tl-act-meta i { font-size: 0.7rem; color: var(--color-primary-light); }
+.iv-tl-notes { font-family: var(--font-secondary); font-size: 0.82rem; color: var(--color-light-muted); margin: 0.5rem 0 0; padding: 0.5rem; background: rgba(245,158,11,0.06); border-radius: var(--radius-md); }
+.iv-tl-empty { font-family: var(--font-secondary); font-size: 0.8rem; color: var(--color-light-dim); font-style: italic; margin: 0; }
+
+/* Calendar View */
+.iv-calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; }
+.iv-cal-cell { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-lg); overflow: hidden; }
+.iv-cal-header { padding: 0.75rem; background: rgba(79,70,229,0.1); font-family: var(--font-primary); font-size: 0.85rem; font-weight: 600; color: var(--color-primary-light); text-align: center; }
+.iv-cal-body { padding: 0.75rem; }
+.iv-cal-act { display: flex; align-items: center; gap: 0.4rem; font-family: var(--font-secondary); font-size: 0.75rem; color: var(--color-light); padding: 0.25rem 0; }
+.iv-cal-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.iv-cal-empty { font-family: var(--font-secondary); font-size: 0.75rem; color: var(--color-light-dim); margin: 0; text-align: center; font-style: italic; }
+
+/* City View */
+.iv-city-section { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 1.5rem; }
+.iv-city-header { position: relative; height: 140px; }
+.iv-city-banner { width: 100%; height: 100%; object-fit: cover; }
+.iv-city-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.9), transparent); display: flex; flex-direction: column; justify-content: flex-end; padding: 1.25rem; }
+.iv-city-overlay h3 { font-family: var(--font-primary); font-size: 1.25rem; font-weight: 700; color: white; margin: 0; }
+.iv-city-overlay span { font-family: var(--font-secondary); font-size: 0.8rem; color: rgba(255,255,255,0.7); }
+.iv-city-acts { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* Tips */
+.iv-tips { margin-top: 2rem; }
+.iv-tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.iv-tip-card {
+  display: flex; align-items: center; gap: 0.75rem; padding: 1rem 1.25rem;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg); font-family: var(--font-secondary); font-size: 0.85rem; color: var(--color-light-muted);
+}
+.iv-tip-card i { color: #10B981; font-size: 1rem; flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .iv-hero { flex-direction: column; }
+  .iv-calendar-grid { grid-template-columns: repeat(2, 1fr); }
+}

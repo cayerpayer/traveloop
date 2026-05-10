@@ -1,0 +1,20 @@
+{
+  "name": "traveloop",
+  "version": "1.0.0",
+  "description": "Traveloop — AI-powered travel planning SaaS platform",
+  "private": true,
+  "scripts": {
+    "client": "cd frontend && npm run dev",
+    "server": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "cd frontend && npm run build",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "lint": "cd frontend && npm run lint"
+  },
+  "keywords": ["travel", "planning", "itinerary", "budget", "trips"],
+  "author": "Traveloop Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

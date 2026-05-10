@@ -1,0 +1,63 @@
+/* SignupPage Styles */
+
+.signup-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+.signup-hero {
+  flex: 1;
+  display: flex;
+}
+
+.signup-form-side {
+  flex: 0 0 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow-y: auto;
+}
+
+/* Override auth-card-wrapper for split layout */
+.signup-form-side .auth-card-wrapper {
+  min-height: auto;
+  padding: 2rem;
+  background: transparent;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .signup-form-side {
+    flex: 0 0 460px;
+  }
+}
+
+@media (max-width: 992px) {
+  .signup-page {
+    flex-direction: column;
+  }
+
+  .signup-hero {
+    flex: none;
+  }
+
+  .signup-hero .hero-section {
+    min-height: 40vh;
+  }
+
+  .signup-form-side {
+    flex: none;
+    width: 100%;
+  }
+
+  .signup-form-side .auth-card-wrapper {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .signup-form-side .auth-card-wrapper {
+    padding: 1rem;
+  }
+}

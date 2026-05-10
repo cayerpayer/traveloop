@@ -1,0 +1,68 @@
+/* ActivityTimeline Styles */
+
+.activity-timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 1rem;
+  opacity: 0;
+}
+
+.timeline-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.timeline-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.timeline-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 30px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+  margin: 4px 0;
+}
+
+.timeline-content {
+  padding-bottom: 1.5rem;
+  flex: 1;
+}
+
+.timeline-title {
+  font-family: var(--font-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-light);
+  margin: 0 0 0.25rem;
+}
+
+.timeline-desc {
+  font-family: var(--font-secondary);
+  font-size: 0.8rem;
+  color: var(--color-light-dim);
+  margin: 0 0 0.35rem;
+  line-height: 1.5;
+}
+
+.timeline-time {
+  font-family: var(--font-secondary);
+  font-size: 0.7rem;
+  color: var(--color-light-dim);
+  opacity: 0.7;
+}

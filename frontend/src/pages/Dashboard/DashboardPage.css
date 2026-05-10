@@ -1,0 +1,222 @@
+/* ============================================
+   DashboardPage — Master Layout Styles
+   ============================================ */
+
+.dashboard-page {
+  min-height: 100vh;
+  position: relative;
+}
+
+.dash-main {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+/* ── Section System ── */
+.dash-section {
+  margin-bottom: 3rem;
+}
+
+.dash-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.dash-section-title {
+  font-family: var(--font-primary);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-light);
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.dash-section-title i {
+  color: var(--color-primary-light);
+}
+
+.dash-section-btn {
+  padding: 0.45rem 1rem !important;
+  font-size: 0.78rem !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+/* ── AI Badge ── */
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.8rem;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(6, 182, 212, 0.1));
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  border-radius: var(--radius-full);
+  font-family: var(--font-secondary);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-primary-light);
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* ── Quick Actions Grid ── */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Trips Horizontal Scroll ── */
+.dash-scroll-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dash-scroll-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--color-light-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-size: 0.85rem;
+}
+
+.dash-scroll-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-light);
+  transform: translateY(-1px);
+}
+
+.trips-scroll-container {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+
+.trips-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.trips-scroll-container > * {
+  scroll-snap-align: start;
+}
+
+/* ── Budget Grid ── */
+.budget-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Destinations Grid ── */
+.destinations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Two Column Layout ── */
+.dash-two-col {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-wrap {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-xl);
+}
+
+.glass-card-subtle {
+  backdrop-filter: blur(10px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .budget-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .destinations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .dash-two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .destinations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dash-main {
+    padding-top: 4.5rem;
+    padding-bottom: 6rem;
+  }
+
+  .dash-section {
+    margin-bottom: 2rem;
+  }
+
+  .dash-section-title {
+    font-size: 1.1rem;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .budget-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .destinations-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .budget-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .dash-section-header {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}

@@ -1,0 +1,618 @@
+/* MyTripsPage Styles */
+
+.my-trips-page {
+  min-height: 100vh;
+  position: relative;
+}
+
+.my-trips-main {
+  padding-top: 5.5rem;
+  padding-bottom: 4rem;
+}
+
+/* ── Header ── */
+.mtp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 0;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.mtp-header-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 1rem;
+  background: rgba(79, 70, 229, 0.12);
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  border-radius: var(--radius-full);
+  font-family: var(--font-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary-light);
+  margin-bottom: 0.75rem;
+}
+
+.mtp-header-title {
+  font-family: var(--font-primary);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-light);
+  margin-bottom: 0.35rem;
+}
+
+.mtp-header-desc {
+  font-family: var(--font-secondary);
+  font-size: 0.9rem;
+  color: var(--color-light-dim);
+  margin: 0;
+}
+
+.mtp-create-btn {
+  padding: 0.85rem 1.75rem !important;
+  border-radius: var(--radius-xl) !important;
+  font-size: 0.95rem !important;
+  box-shadow: 0 0 25px rgba(79, 70, 229, 0.3);
+  flex-shrink: 0;
+}
+
+/* ── Stats ── */
+.mtp-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.mtp-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  transition: all 0.3s ease;
+}
+
+.mtp-stat-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-2px);
+}
+
+.mtp-stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.mtp-stat-value {
+  display: block;
+  font-family: var(--font-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-light);
+  line-height: 1.2;
+}
+
+.mtp-stat-label {
+  display: block;
+  font-family: var(--font-secondary);
+  font-size: 0.72rem;
+  color: var(--color-light-dim);
+}
+
+/* ── Controls ── */
+.mtp-controls {
+  margin-bottom: 1.5rem;
+}
+
+.mtp-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.mtp-search-wrap:focus-within {
+  border-color: rgba(79, 70, 229, 0.4);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.mtp-search-icon {
+  padding: 0 0 0 1rem;
+  color: var(--color-light-dim);
+  font-size: 0.95rem;
+}
+
+.mtp-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--color-light);
+  font-family: var(--font-secondary);
+  font-size: 0.9rem;
+  padding: 0.85rem 1rem;
+}
+
+.mtp-search-input::placeholder {
+  color: var(--color-light-dim);
+}
+
+.mtp-search-clear {
+  background: none;
+  border: none;
+  color: var(--color-light-dim);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.mtp-filter-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.mtp-category-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.mtp-pill {
+  padding: 0.4rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
+  font-family: var(--font-secondary);
+  font-size: 0.75rem;
+  color: var(--color-light-muted);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.mtp-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-light);
+}
+
+.mtp-pill.active {
+  background: rgba(79, 70, 229, 0.15);
+  border-color: rgba(79, 70, 229, 0.4);
+  color: var(--color-primary-light);
+}
+
+.mtp-sort-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  color: var(--color-light-muted);
+  font-family: var(--font-secondary);
+  font-size: 0.78rem;
+  padding: 0.5rem 0.85rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.mtp-sort-select option {
+  background: var(--color-dark);
+  color: var(--color-light);
+}
+
+.mtp-results-count {
+  font-family: var(--font-secondary);
+  font-size: 0.78rem;
+  color: var(--color-light-dim);
+  margin-bottom: 1.25rem;
+}
+
+/* ── Trip Cards Grid ── */
+.mtp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.mtp-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all 0.35s ease;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.mtp-card:hover {
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* Card Image */
+.mtp-card-image-wrap {
+  position: relative;
+  height: 190px;
+  overflow: hidden;
+}
+
+.mtp-card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.mtp-card:hover .mtp-card-image {
+  transform: scale(1.08);
+}
+
+.mtp-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, transparent 50%);
+}
+
+.mtp-card-status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 0.25rem 0.7rem;
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 600;
+  font-family: var(--font-secondary);
+  border: 1px solid;
+  backdrop-filter: blur(8px);
+  text-transform: capitalize;
+}
+
+.mtp-card-privacy {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem;
+}
+
+.mtp-card-category {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  padding: 0.2rem 0.6rem;
+  background: rgba(79, 70, 229, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fff;
+  font-family: var(--font-secondary);
+}
+
+/* Card Body */
+.mtp-card-body {
+  padding: 1.25rem;
+}
+
+.mtp-card-title {
+  font-family: var(--font-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-light);
+  margin: 0 0 0.35rem;
+}
+
+.mtp-card-dates {
+  font-family: var(--font-secondary);
+  font-size: 0.78rem;
+  color: var(--color-light-dim);
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.mtp-card-duration {
+  margin-left: 0.4rem;
+  color: var(--color-primary-light);
+}
+
+.mtp-card-desc {
+  font-family: var(--font-secondary);
+  font-size: 0.8rem;
+  color: var(--color-light-dim);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.mtp-card-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.mtp-card-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-secondary);
+  font-size: 0.72rem;
+  color: var(--color-light-dim);
+}
+
+.mtp-card-meta-item i {
+  color: var(--color-primary-light);
+  font-size: 0.8rem;
+}
+
+/* Card Actions */
+.mtp-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mtp-action-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--color-light-dim);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.mtp-action-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-light);
+  transform: translateY(-1px);
+}
+
+.mtp-action-btn.view:hover {
+  border-color: rgba(79, 70, 229, 0.4);
+  color: var(--color-primary-light);
+}
+
+.mtp-action-btn.edit:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  color: var(--color-secondary-light);
+}
+
+.mtp-action-btn.share:hover {
+  border-color: rgba(245, 158, 11, 0.4);
+  color: var(--color-accent-light);
+}
+
+.mtp-action-btn.delete:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* ── Empty State ── */
+.mtp-empty {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.mtp-empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+  color: var(--color-primary-light);
+  animation: float 3s ease-in-out infinite;
+}
+
+.mtp-empty-title {
+  font-family: var(--font-primary);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-light);
+  margin-bottom: 0.5rem;
+}
+
+.mtp-empty-desc {
+  font-family: var(--font-secondary);
+  font-size: 0.88rem;
+  color: var(--color-light-dim);
+  max-width: 400px;
+  margin: 0 auto 1.5rem;
+  line-height: 1.6;
+}
+
+.mtp-empty-cta {
+  padding: 0.85rem 1.75rem !important;
+  border-radius: var(--radius-xl) !important;
+}
+
+/* ── Delete Modal ── */
+.mtp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+  padding: 1rem;
+}
+
+.mtp-modal {
+  background: rgba(22, 32, 51, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-2xl);
+  padding: 2rem;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  animation: fadeInUp 0.3s ease;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+.mtp-modal-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  font-size: 1.5rem;
+  color: #EF4444;
+}
+
+.mtp-modal-title {
+  font-family: var(--font-primary);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-light);
+  margin-bottom: 0.5rem;
+}
+
+.mtp-modal-desc {
+  font-family: var(--font-secondary);
+  font-size: 0.85rem;
+  color: var(--color-light-dim);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.mtp-modal-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.mtp-modal-cancel {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-light);
+  font-family: var(--font-secondary);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mtp-modal-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mtp-modal-delete {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: var(--radius-lg);
+  background: #EF4444;
+  border: none;
+  color: #fff;
+  font-family: var(--font-secondary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mtp-modal-delete:hover {
+  background: #DC2626;
+  transform: translateY(-1px);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1200px) {
+  .mtp-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .mtp-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .mtp-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mtp-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mtp-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mtp-filter-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mtp-category-pills {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding-bottom: 0.25rem;
+  }
+
+  .mtp-category-pills::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .mtp-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .mtp-create-btn {
+    width: 100%;
+  }
+}

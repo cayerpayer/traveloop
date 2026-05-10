@@ -1,0 +1,200 @@
+/* ============================================
+   ProfilePage — User settings dashboard
+   ============================================ */
+import { useState } from 'react';
+import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
+import { useAuth } from '../../context/AuthContext';
+import { getItem, setItem, STORAGE_KEYS } from '../../utils/localStorage';
+import toast from 'react-hot-toast';
+import './ProfilePage.css';
+
+const BADGES = [
+  { icon: '🌍', name: 'Explorer', desc: '5+ trips planned' },
+  { icon: '📸', name: 'Storyteller', desc: '10+ journal entries' },
+  { icon: '💰', name: 'Budget Pro', desc: 'Under budget 3 trips' },
+  { icon: '🏔️', name: 'Adventurer', desc: 'Hiked 3+ trails' },
+  { icon: '✈️', name: 'Frequent Flyer', desc: 'Visited 5+ countries' },
+];
+
+const LANGUAGES = ['English', 'Spanish', 'French', 'German', 'Japanese', 'Hindi'];
+const CURRENCIES = ['USD ($)', 'EUR (€)', 'GBP (£)', 'JPY (¥)', 'INR (₹)'];
+
+export default function ProfilePage() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState(() => getItem(STORAGE_KEYS.PROFILE, {
+    name: user?.name || 'Demo User',
+    email: user?.email || 'demo@traveloop.com',
+    bio: 'Passionate traveler exploring the world one city at a time ✈️',
+    language: 'English',
+    currency: 'USD ($)',
+    notifications: true,
+    darkMode: true,
+    passport: { countries: 12, stamps: 28 },
+  }));
+  const [activeTab, setActiveTab] = useState('profile');
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({ ...profile });
+
+  const saveProfile = () => {
+    setProfile(editData);
+    setItem(STORAGE_KEYS.PROFILE, editData);
+    setEditing(false);
+    toast.success('Profile updated!');
+  };
+
+  const savedCities = getItem(STORAGE_KEYS.SAVED_CITIES, []);
+
+  const tabs = [
+    { key: 'profile', icon: 'bi-person', label: 'Profile' },
+    { key: 'preferences', icon: 'bi-sliders', label: 'Preferences' },
+    { key: 'achievements', icon: 'bi-trophy', label: 'Achievements' },
+    { key: 'account', icon: 'bi-gear', label: 'Account' },
+  ];
+
+  const getInitials = (name) => name ? name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : '?';
+
+  return (
+    <div className="profile-page">
+      <div className="animated-bg"></div>
+      <DashboardNavbar />
+      <main className="container profile-main">
+        {/* Header */}
+        <div className="pp-header fade-in-up">
+          <div className="pp-avatar-wrap">
+            <div className="pp-avatar">{getInitials(profile.name)}</div>
+            <button className="pp-avatar-edit"><i className="bi bi-camera"></i></button>
+          </div>
+          <div className="pp-header-info">
+            <h1 className="pp-name">{profile.name}</h1>
+            <p className="pp-email">{profile.email}</p>
+            <p className="pp-bio">{profile.bio}</p>
+            <div className="pp-header-stats">
+              <div className="pp-stat"><span className="pp-stat-val">3</span><span className="pp-stat-label">Trips</span></div>
+              <div className="pp-stat"><span className="pp-stat-val">{savedCities.length}</span><span className="pp-stat-label">Saved</span></div>
+              <div className="pp-stat"><span className="pp-stat-val">{profile.passport.countries}</span><span className="pp-stat-label">Countries</span></div>
+              <div className="pp-stat"><span className="pp-stat-val">{profile.passport.stamps}</span><span className="pp-stat-label">Stamps</span></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="pp-tabs fade-in-up delay-1">
+          {tabs.map(t => (
+            <button key={t.key} className={`pp-tab ${activeTab === t.key ? 'active' : ''}`} onClick={() => setActiveTab(t.key)}>
+              <i className={`bi ${t.icon}`}></i><span>{t.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Profile Tab */}
+        {activeTab === 'profile' && (
+          <div className="pp-section fade-in-up">
+            <div className="pp-section-header">
+              <h3>Personal Info</h3>
+              <button className="btn-glass btn-sm" onClick={() => { setEditing(!editing); setEditData({ ...profile }); }}>
+                <i className={`bi ${editing ? 'bi-x' : 'bi-pencil'} me-1`}></i>{editing ? 'Cancel' : 'Edit'}
+              </button>
+            </div>
+            <div className="pp-form-grid">
+              <div className="pp-field">
+                <label>Full Name</label>
+                {editing ? <input type="text" value={editData.name} onChange={e => setEditData({ ...editData, name: e.target.value })} className="pp-input" />
+                  : <p>{profile.name}</p>}
+              </div>
+              <div className="pp-field">
+                <label>Email</label>
+                {editing ? <input type="email" value={editData.email} onChange={e => setEditData({ ...editData, email: e.target.value })} className="pp-input" />
+                  : <p>{profile.email}</p>}
+              </div>
+              <div className="pp-field full">
+                <label>Bio</label>
+                {editing ? <textarea value={editData.bio} onChange={e => setEditData({ ...editData, bio: e.target.value })} className="pp-input" rows={2} />
+                  : <p>{profile.bio}</p>}
+              </div>
+            </div>
+            {editing && <button className="btn-gradient mt-3" onClick={saveProfile}><i className="bi bi-check-lg me-1"></i>Save Changes</button>}
+
+            {/* Passport Tracker */}
+            <div className="pp-passport">
+              <h4><i className="bi bi-passport me-2"></i>Passport Tracker</h4>
+              <div className="pp-passport-grid">
+                <div className="pp-passport-stat"><span className="pp-passport-val">{profile.passport.countries}</span><span>Countries Visited</span></div>
+                <div className="pp-passport-stat"><span className="pp-passport-val">{profile.passport.stamps}</span><span>Passport Stamps</span></div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Preferences Tab */}
+        {activeTab === 'preferences' && (
+          <div className="pp-section fade-in-up">
+            <h3>Preferences</h3>
+            <div className="pp-pref-list">
+              <div className="pp-pref-item">
+                <div><span className="pp-pref-label">Language</span><span className="pp-pref-desc">App display language</span></div>
+                <select value={profile.language} onChange={e => { const p = { ...profile, language: e.target.value }; setProfile(p); setItem(STORAGE_KEYS.PROFILE, p); }} className="pp-select">
+                  {LANGUAGES.map(l => <option key={l} value={l}>{l}</option>)}
+                </select>
+              </div>
+              <div className="pp-pref-item">
+                <div><span className="pp-pref-label">Currency</span><span className="pp-pref-desc">Default currency for budgets</span></div>
+                <select value={profile.currency} onChange={e => { const p = { ...profile, currency: e.target.value }; setProfile(p); setItem(STORAGE_KEYS.PROFILE, p); }} className="pp-select">
+                  {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div className="pp-pref-item">
+                <div><span className="pp-pref-label">Notifications</span><span className="pp-pref-desc">Trip alerts & reminders</span></div>
+                <button className={`pp-toggle ${profile.notifications ? 'on' : ''}`} onClick={() => { const p = { ...profile, notifications: !profile.notifications }; setProfile(p); setItem(STORAGE_KEYS.PROFILE, p); }}>
+                  <span className="pp-toggle-thumb"></span>
+                </button>
+              </div>
+              <div className="pp-pref-item">
+                <div><span className="pp-pref-label">Dark Mode</span><span className="pp-pref-desc">Use dark theme</span></div>
+                <button className={`pp-toggle ${profile.darkMode ? 'on' : ''}`} onClick={() => { const p = { ...profile, darkMode: !profile.darkMode }; setProfile(p); setItem(STORAGE_KEYS.PROFILE, p); }}>
+                  <span className="pp-toggle-thumb"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Achievements Tab */}
+        {activeTab === 'achievements' && (
+          <div className="pp-section fade-in-up">
+            <h3>Travel Badges</h3>
+            <div className="pp-badges-grid">
+              {BADGES.map((b, i) => (
+                <div key={i} className="pp-badge-card" style={{ animationDelay: `${0.1 * i}s` }}>
+                  <span className="pp-badge-icon">{b.icon}</span>
+                  <span className="pp-badge-name">{b.name}</span>
+                  <span className="pp-badge-desc">{b.desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Account Tab */}
+        {activeTab === 'account' && (
+          <div className="pp-section fade-in-up">
+            <h3>Account Settings</h3>
+            <div className="pp-account-list">
+              <button className="pp-account-item" onClick={() => toast('Password change coming soon!')}>
+                <i className="bi bi-lock"></i><span>Change Password</span><i className="bi bi-chevron-right"></i>
+              </button>
+              <button className="pp-account-item" onClick={() => toast('Privacy settings coming soon!')}>
+                <i className="bi bi-shield-lock"></i><span>Privacy Settings</span><i className="bi bi-chevron-right"></i>
+              </button>
+              <button className="pp-account-item" onClick={() => toast('Data export coming soon!')}>
+                <i className="bi bi-download"></i><span>Export Data</span><i className="bi bi-chevron-right"></i>
+              </button>
+              <button className="pp-account-item danger" onClick={() => toast.error('Account deletion is disabled in demo')}>
+                <i className="bi bi-trash3"></i><span>Delete Account</span><i className="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}

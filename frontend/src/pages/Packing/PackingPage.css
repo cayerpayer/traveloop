@@ -1,0 +1,95 @@
+.packing-main { padding-top: 100px; padding-bottom: 4rem; max-width: 800px; margin: 0 auto; }
+.pk-header { text-align: center; margin-bottom: 2rem; }
+.pk-title { font-family: var(--font-primary); font-size: var(--fs-3xl); font-weight: 800; margin-bottom: 0.5rem; }
+.pk-subtitle { font-family: var(--font-secondary); color: var(--color-light-dim); }
+
+/* Progress Card */
+.pk-progress-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.pk-prog-info { display: flex; flex-direction: column; min-width: 140px; }
+.pk-prog-label { font-family: var(--font-secondary); font-size: 0.75rem; color: var(--color-light-dim); text-transform: uppercase; }
+.pk-prog-count { font-family: var(--font-primary); font-size: 0.95rem; font-weight: 600; color: var(--color-light); }
+.pk-prog-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: var(--radius-full); overflow: hidden; }
+.pk-prog-fill { height: 100%; background: var(--gradient-primary); border-radius: var(--radius-full); transition: width 0.8s ease; }
+.pk-prog-pct { font-family: var(--font-primary); font-size: 1.25rem; font-weight: 700; color: var(--color-primary-light); min-width: 50px; text-align: right; }
+
+/* Weather Tip */
+.pk-weather-tip {
+  display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem;
+  background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2);
+  border-radius: var(--radius-xl); margin-bottom: 1.5rem;
+  font-family: var(--font-secondary); font-size: 0.82rem; color: var(--color-secondary-light);
+}
+.pk-weather-tip i { font-size: 1.1rem; }
+
+/* Actions */
+.pk-actions { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.pk-search-wrap {
+  flex: 1; min-width: 200px; display: flex; align-items: center; gap: 0.5rem;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg); padding: 0 0.75rem;
+}
+.pk-search-wrap i { color: var(--color-light-dim); font-size: 0.85rem; }
+.pk-search-wrap input { flex: 1; background: none; border: none; outline: none; color: var(--color-light); font-family: var(--font-secondary); font-size: 0.85rem; padding: 0.6rem 0; }
+
+/* Category Tabs */
+.pk-cat-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+.pk-cat-tab {
+  padding: 0.4rem 0.85rem; border-radius: var(--radius-full); border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04); color: var(--color-light-dim);
+  font-family: var(--font-secondary); font-size: 0.8rem; cursor: pointer;
+  transition: all var(--transition-base); display: flex; align-items: center;
+}
+.pk-cat-tab:hover { background: rgba(255,255,255,0.08); }
+.pk-cat-tab.active { background: var(--color-primary); border-color: var(--color-primary); color: white; }
+
+/* Items */
+.pk-items-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.pk-item {
+  display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg); transition: all 0.25s ease; opacity: 0;
+}
+.pk-item:hover { background: rgba(255,255,255,0.07); }
+.pk-item.packed { opacity: 0.6; }
+.pk-item.packed .pk-item-name { text-decoration: line-through; }
+.pk-check {
+  width: 28px; height: 28px; border-radius: var(--radius-md); border: 2px solid rgba(255,255,255,0.15);
+  background: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; transition: all 0.25s ease; flex-shrink: 0;
+}
+.pk-check.checked { background: var(--color-primary); border-color: var(--color-primary); }
+.pk-item-info { flex: 1; }
+.pk-item-name { font-family: var(--font-primary); font-size: 0.95rem; font-weight: 500; color: var(--color-light); display: block; }
+.pk-item-meta { display: flex; gap: 0.75rem; margin-top: 0.25rem; }
+.pk-item-cat { font-family: var(--font-secondary); font-size: 0.72rem; color: var(--color-light-dim); display: flex; align-items: center; gap: 0.3rem; }
+.pk-item-cat i { font-size: 0.7rem; color: var(--color-primary-light); }
+.pk-item-qty { font-family: var(--font-secondary); font-size: 0.72rem; color: var(--color-light-dim); }
+.pk-priority { padding: 0.2rem 0.6rem; border-radius: var(--radius-full); font-family: var(--font-secondary); font-size: 0.68rem; font-weight: 600; text-transform: uppercase; }
+.pk-priority.high { background: rgba(239,68,68,0.1); color: #FCA5A5; }
+.pk-priority.medium { background: rgba(245,158,11,0.1); color: #FCD34D; }
+.pk-priority.low { background: rgba(16,185,129,0.1); color: #6EE7B7; }
+.pk-remove-btn { background: none; border: none; color: var(--color-light-dim); cursor: pointer; font-size: 0.9rem; padding: 0.25rem; transition: color 0.2s; }
+.pk-remove-btn:hover { color: #EF4444; }
+
+/* Add Modal */
+.pk-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.pk-add-modal {
+  background: var(--color-dark-alt); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-2xl); padding: 2rem; width: 100%; max-width: 450px;
+}
+.pk-add-modal h3 { font-family: var(--font-primary); font-size: 1.25rem; font-weight: 600; color: var(--color-light); margin-bottom: 1.5rem; }
+.pk-input {
+  width: 100%; padding: 0.75rem 1rem; background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);
+  color: var(--color-light); font-family: var(--font-secondary); font-size: 0.9rem;
+  margin-bottom: 1rem; outline: none;
+}
+.pk-input:focus { border-color: var(--color-primary); }
+.pk-input option { background: var(--color-dark-alt); color: var(--color-light); }
+.pk-add-row { display: flex; gap: 1rem; }
+.pk-add-row .pk-input { flex: 1; }
+.pk-add-actions { display: flex; gap: 1rem; margin-top: 0.5rem; }

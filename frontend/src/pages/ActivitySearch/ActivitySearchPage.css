@@ -1,0 +1,64 @@
+.activity-search-main { padding-top: 100px; padding-bottom: 4rem; }
+.as-header { text-align: center; margin-bottom: 2rem; }
+.as-title { font-family: var(--font-primary); font-size: var(--fs-3xl); font-weight: 800; margin-bottom: 0.5rem; }
+.as-subtitle { font-family: var(--font-secondary); color: var(--color-light-dim); }
+
+/* AI Banner */
+.as-ai-banner {
+  display: flex; align-items: center; gap: 1rem; padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(79,70,229,0.1), rgba(6,182,212,0.05));
+  border: 1px solid rgba(79,70,229,0.2); border-radius: var(--radius-xl);
+  margin-bottom: 2rem;
+}
+.as-ai-icon { width: 44px; height: 44px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem; }
+.as-ai-banner h4 { font-family: var(--font-primary); font-size: 0.95rem; font-weight: 600; color: var(--color-light); margin: 0; }
+.as-ai-banner p { font-family: var(--font-secondary); font-size: 0.8rem; color: var(--color-light-dim); margin: 0; }
+
+/* Grid */
+.as-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+.as-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-xl); overflow: hidden; cursor: pointer;
+  transition: all 0.35s ease; opacity: 0;
+}
+.as-card:hover { transform: translateY(-6px); background: rgba(255,255,255,0.07); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+.as-card-img-wrap { position: relative; height: 200px; overflow: hidden; }
+.as-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.as-card:hover .as-card-img { transform: scale(1.08); }
+.as-card-img-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.7) 0%, transparent 50%); }
+.as-card-cat { position: absolute; top: 12px; left: 12px; padding: 0.3rem 0.75rem; border-radius: var(--radius-full); background: rgba(79,70,229,0.8); backdrop-filter: blur(10px); font-family: var(--font-secondary); font-size: 0.7rem; font-weight: 600; color: white; }
+.as-save-btn { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.25s ease; }
+.as-save-btn.saved { background: var(--color-accent); }
+.as-card-body { padding: 1.25rem; }
+.as-card-name { font-family: var(--font-primary); font-size: 1.1rem; font-weight: 700; color: var(--color-light); margin: 0 0 0.25rem; }
+.as-card-city { font-family: var(--font-secondary); font-size: 0.8rem; color: var(--color-light-dim); margin-bottom: 0.5rem; }
+.as-card-desc { font-family: var(--font-secondary); font-size: 0.82rem; color: var(--color-light-muted); margin-bottom: 1rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.as-card-meta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; }
+.as-meta { display: flex; align-items: center; gap: 0.3rem; font-family: var(--font-secondary); font-size: 0.75rem; color: var(--color-light-dim); }
+.as-meta i { color: var(--color-accent); font-size: 0.75rem; }
+.as-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.as-price { font-family: var(--font-primary); font-size: 1.25rem; font-weight: 700; color: var(--color-light); }
+.as-add-btn { padding: 0.5rem 1rem; border-radius: var(--radius-lg); background: rgba(79,70,229,0.15); border: 1px solid rgba(79,70,229,0.25); color: var(--color-primary-light); font-family: var(--font-secondary); font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; }
+.as-add-btn:hover { background: rgba(79,70,229,0.3); transform: translateY(-1px); }
+
+/* Detail Modal */
+.as-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+.as-detail-modal { background: var(--color-dark-alt); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-2xl); width: 100%; max-width: 600px; max-height: 85vh; overflow-y: auto; position: relative; }
+.as-modal-close { position: absolute; top: 1rem; right: 1rem; z-index: 2; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.5); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.as-modal-img { width: 100%; height: 250px; object-fit: cover; }
+.as-modal-body { padding: 1.5rem; }
+.as-modal-cat { display: inline-block; padding: 0.3rem 0.75rem; border-radius: var(--radius-full); background: rgba(79,70,229,0.15); color: var(--color-primary-light); font-family: var(--font-secondary); font-size: 0.75rem; font-weight: 600; margin-bottom: 0.75rem; }
+.as-modal-body h2 { font-family: var(--font-primary); font-size: 1.5rem; font-weight: 700; color: var(--color-light); margin-bottom: 0.25rem; }
+.as-modal-city { font-family: var(--font-secondary); font-size: 0.85rem; color: var(--color-light-dim); margin-bottom: 1rem; }
+.as-modal-desc { font-family: var(--font-secondary); font-size: 0.9rem; color: var(--color-light-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+.as-modal-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.as-modal-stat { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(255,255,255,0.04); border-radius: var(--radius-lg); }
+.as-modal-stat i { font-size: 1rem; color: var(--color-primary-light); }
+.as-modal-stat span { font-family: var(--font-primary); font-size: 0.9rem; font-weight: 600; color: var(--color-light); }
+.as-modal-stat small { font-family: var(--font-secondary); font-size: 0.7rem; color: var(--color-light-dim); }
+.as-modal-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.5rem; }
+.as-modal-actions { display: flex; gap: 1rem; }
+
+@media (max-width: 768px) {
+  .as-grid { grid-template-columns: 1fr; }
+}
