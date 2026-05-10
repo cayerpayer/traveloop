@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
 import { useAuth } from '../../context/AuthContext';
+import useTripStats from '../../hooks/useTripStats';
 import { getItem, setItem, STORAGE_KEYS } from '../../utils/localStorage';
 import toast from 'react-hot-toast';
 import './ProfilePage.css';
@@ -21,12 +22,13 @@ const CURRENCIES = ['USD ($)', 'EUR (€)', 'GBP (£)', 'JPY (¥)', 'INR (₹)']
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const stats = useTripStats();
   const [profile, setProfile] = useState(() => getItem(STORAGE_KEYS.PROFILE, {
     name: user?.name || 'Demo User',
     email: user?.email || 'demo@traveloop.com',
     bio: 'Passionate traveler exploring the world one city at a time ✈️',
     language: 'English',
-    currency: 'USD ($)',
+    currency: 'INR (₹)',
     notifications: true,
     darkMode: true,
     passport: { countries: 12, stamps: 28 },
@@ -69,10 +71,10 @@ export default function ProfilePage() {
             <p className="pp-email">{profile.email}</p>
             <p className="pp-bio">{profile.bio}</p>
             <div className="pp-header-stats">
-              <div className="pp-stat"><span className="pp-stat-val">3</span><span className="pp-stat-label">Trips</span></div>
+              <div className="pp-stat"><span className="pp-stat-val">{stats.totalTrips}</span><span className="pp-stat-label">Trips</span></div>
               <div className="pp-stat"><span className="pp-stat-val">{savedCities.length}</span><span className="pp-stat-label">Saved</span></div>
-              <div className="pp-stat"><span className="pp-stat-val">{profile.passport.countries}</span><span className="pp-stat-label">Countries</span></div>
-              <div className="pp-stat"><span className="pp-stat-val">{profile.passport.stamps}</span><span className="pp-stat-label">Stamps</span></div>
+              <div className="pp-stat"><span className="pp-stat-val">{stats.destinations}</span><span className="pp-stat-label">Places</span></div>
+              <div className="pp-stat"><span className="pp-stat-val">{stats.upcoming}</span><span className="pp-stat-label">Upcoming</span></div>
             </div>
           </div>
         </div>
@@ -139,7 +141,7 @@ export default function ProfilePage() {
               <div className="pp-pref-item">
                 <div><span className="pp-pref-label">Currency</span><span className="pp-pref-desc">Default currency for budgets</span></div>
                 <select value={profile.currency} onChange={e => { const p = { ...profile, currency: e.target.value }; setProfile(p); setItem(STORAGE_KEYS.PROFILE, p); }} className="pp-select">
-                  {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  {['INR (₹)'].map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div className="pp-pref-item">

@@ -8,6 +8,8 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../../context/TripContext';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
+import useTripStats from '../../hooks/useTripStats';
+import { formatCompactINR } from '../../utils/currency';
 import toast from 'react-hot-toast';
 import './MyTripsPage.css';
 
@@ -23,6 +25,7 @@ const CATEGORY_FILTERS = ['All', 'Adventure', 'Luxury', 'Beach', 'Solo', 'Family
 
 export default function MyTripsPage() {
   const { trips, updateTrip, deleteTrip } = useTrips();
+  const liveStats = useTripStats();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,24 +35,6 @@ export default function MyTripsPage() {
   const [viewModal, setViewModal] = useState({ open: false, trip: null });
   const [editModal, setEditModal] = useState({ open: false, trip: null });
   const [editForm, setEditForm] = useState(null);
-
-  // Stats
-  const stats = useMemo(() => {
-    const uniqueDestinations = new Set();
-    let totalBudget = 0;
-    let upcoming = 0;
-    trips.forEach((t) => {
-      totalBudget += t.budget || 0;
-      t.destinations?.forEach((d) => uniqueDestinations.add(d));
-      if (t.status === 'upcoming' || t.status === 'planning') upcoming++;
-    });
-    return {
-      total: trips.length,
-      destinations: uniqueDestinations.size,
-      upcoming,
-      totalBudget,
-    };
-  }, [trips]);
 
   // Filter + Sort
   const filteredTrips = useMemo(() => {
@@ -110,6 +95,7 @@ export default function MyTripsPage() {
       description: trip.description || '',
       category: trip.category || '',
       budget: trip.budget || 0,
+      destinations: trip.destinations?.join(', ') || '',
       privacy: trip.privacy || 'private',
       status: trip.status || 'planning',
     });
@@ -126,7 +112,10 @@ export default function MyTripsPage() {
       return;
     }
 
-    updateTrip(editModal.trip.id, editForm);
+    updateTrip(editModal.trip.id, {
+      ...editForm,
+      destinations: editForm.destinations.split(',').map((item) => item.trim()).filter(Boolean),
+    });
     toast.success('Trip updated');
     setEditModal({ open: false, trip: null });
     setEditForm(null);
@@ -156,9 +145,7 @@ export default function MyTripsPage() {
   };
 
   const formatBudget = (val) => {
-    if (!val) return '—';
-    if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
-    return `₹${(val / 1000).toFixed(0)}K`;
+    return formatCompactINR(val || 0);
   };
 
   const formatDate = (d) => {
@@ -206,10 +193,10 @@ export default function MyTripsPage() {
         {/* Stats Bar */}
         <section className="mtp-stats fade-in-up delay-1" id="trips-stats">
           {[
-            { icon: 'bi-airplane', value: stats.total, label: 'Total Trips', color: '#4F46E5' },
-            { icon: 'bi-geo-alt', value: stats.destinations, label: 'Destinations', color: '#06B6D4' },
-            { icon: 'bi-calendar-check', value: stats.upcoming, label: 'Upcoming', color: '#F59E0B' },
-            { icon: 'bi-wallet2', value: formatBudget(stats.totalBudget), label: 'Total Budget', color: '#10B981' },
+            { icon: 'bi-airplane', value: liveStats.totalTrips, label: 'Total Trips', color: '#4F46E5' },
+            { icon: 'bi-geo-alt', value: liveStats.destinations, label: 'Destinations', color: '#06B6D4' },
+            { icon: 'bi-calendar-check', value: liveStats.upcoming, label: 'Upcoming', color: '#F59E0B' },
+            { icon: 'bi-wallet2', value: formatBudget(liveStats.totalBudget), label: 'Total Budget', color: '#10B981' },
           ].map((s, i) => (
             <div key={i} className="mtp-stat-card">
               <div className="mtp-stat-icon" style={{ background: `${s.color}18`, color: s.color }}>
@@ -427,18 +414,22 @@ export default function MyTripsPage() {
                 <textarea rows={3} value={editForm.description} onChange={(e) => handleEditChange('description', e.target.value)} />
               </label>
               <div className="mtp-edit-row">
-                <label>
-                  Category
-                  <select value={editForm.category} onChange={(e) => handleEditChange('category', e.target.value)}>
-                    <option value="">Select category</option>
-                    {CATEGORY_FILTERS.filter((cat) => cat !== 'All').map((cat) => <option key={cat} value={cat}>{cat}</option>)}
-                  </select>
-                </label>
-                <label>
-                  Budget
-                  <input type="number" min="0" value={editForm.budget} onChange={(e) => handleEditChange('budget', Number(e.target.value))} />
-                </label>
+              <label>
+                Category
+                <select value={editForm.category} onChange={(e) => handleEditChange('category', e.target.value)}>
+                  <option value="">Select category</option>
+                  {CATEGORY_FILTERS.filter((cat) => cat !== 'All').map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+              </label>
+              <label>
+                Budget
+                <input type="number" min="0" value={editForm.budget} onChange={(e) => handleEditChange('budget', Number(e.target.value))} />
+              </label>
               </div>
+              <label>
+                Destinations
+                <input value={editForm.destinations} onChange={(e) => handleEditChange('destinations', e.target.value)} placeholder="Goa, Jaipur, Manali" />
+              </label>
             </div>
             <div className="mtp-modal-actions">
               <button className="mtp-modal-cancel" onClick={() => { setEditModal({ open: false, trip: null }); setEditForm(null); }}>Cancel</button>

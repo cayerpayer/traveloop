@@ -6,15 +6,39 @@
 import mongoose from 'mongoose';
 
 const expenseSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    trim: true,
+    required: [true, 'Expense title is required'],
+  },
   category: {
     type: String,
-    enum: ['accommodation', 'food', 'transport', 'activities', 'shopping', 'other'],
+    enum: [
+      'Food',
+      'Flight',
+      'Hotel',
+      'Transport',
+      'Shopping',
+      'Activities',
+      'Other',
+      'accommodation',
+      'food',
+      'transport',
+      'activities',
+      'shopping',
+      'other',
+    ],
     required: true,
   },
   description: String,
+  notes: {
+    type: String,
+    default: '',
+  },
   amount: {
     type: Number,
     required: [true, 'Amount is required'],
+    min: [0, 'Amount cannot be negative'],
   },
   date: {
     type: Date,

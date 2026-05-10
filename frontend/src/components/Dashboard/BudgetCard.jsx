@@ -3,39 +3,12 @@
    counter, circular progress, trend indicator.
    ============================================ */
 
-import { useState, useEffect, useRef } from 'react';
+import useCountUp from '../../hooks/useCountUp';
+import { formatINR } from '../../utils/currency';
 import './BudgetCard.css';
 
-export default function BudgetCard({ icon, label, value, trend, color, percentage, index }) {
-  const [displayValue, setDisplayValue] = useState(0);
-  const cardRef = useRef(null);
-  const animated = useRef(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !animated.current) {
-          animated.current = true;
-          animateValue(0, value, 1500);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    if (cardRef.current) observer.observe(cardRef.current);
-    return () => observer.disconnect();
-  }, [value]);
-
-  const animateValue = (start, end, duration) => {
-    const startTime = performance.now();
-    const step = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setDisplayValue(Math.floor(eased * (end - start) + start));
-      if (progress < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
+export default function BudgetCard({ icon, label, value, trend, color, percentage, index, formatValue = formatINR, loading = false }) {
+  const displayValue = useCountUp(value || 0, 900);
 
   const isPositive = trend?.startsWith('+');
   const circumference = 2 * Math.PI * 36;
@@ -43,8 +16,7 @@ export default function BudgetCard({ icon, label, value, trend, color, percentag
 
   return (
     <div
-      ref={cardRef}
-      className="budget-card fade-in-up"
+      className={`budget-card fade-in-up ${loading ? 'is-loading' : ''}`}
       style={{ animationDelay: `${0.1 + index * 0.1}s` }}
       id={`budget-card-${index}`}
     >
@@ -61,7 +33,7 @@ export default function BudgetCard({ icon, label, value, trend, color, percentag
       </div>
 
       <div className="bc-value-row">
-        <span className="bc-value">${displayValue.toLocaleString()}</span>
+        <span className="bc-value">{loading ? ' ' : formatValue(displayValue)}</span>
         {percentage !== undefined && (
           <div className="bc-circle-wrap">
             <svg className="bc-circle" viewBox="0 0 80 80">
@@ -72,7 +44,7 @@ export default function BudgetCard({ icon, label, value, trend, color, percentag
                 style={{
                   stroke: color,
                   strokeDasharray: circumference,
-                  strokeDashoffset: animated.current ? strokeDashoffset : circumference,
+                  strokeDashoffset,
                 }}
               />
             </svg>
