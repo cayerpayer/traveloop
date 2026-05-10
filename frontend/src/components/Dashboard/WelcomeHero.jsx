@@ -4,6 +4,7 @@
    ============================================ */
 
 import { useEffect, useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { TRAVEL_QUOTES } from '../../data/dashboardData';
 import './WelcomeHero.css';
@@ -66,19 +67,21 @@ export default function WelcomeHero() {
             <span className="hero-wave">👋</span>
           </h1>
           <h2 className="hero-heading fade-in-up delay-2">
-            Where Will Your Next<br />
-            <span className="hero-heading-accent">Adventure</span> Begin?
+            <span className="hero-heading-line">Where Will Your Next</span>
+            <span className="hero-heading-line">
+              <span className="hero-heading-accent">Adventure</span> Begin?
+            </span>
           </h2>
           <p className="hero-subtext fade-in-up delay-3">
             Create intelligent travel plans, manage budgets, and explore dream destinations effortlessly.
           </p>
           <div className="hero-cta-group fade-in-up delay-4">
-            <button className="btn-gradient hero-cta-primary" id="cta-plan-trip">
+            <Link to="/create-trip" className="btn-gradient hero-cta-primary" id="cta-plan-trip">
               <i className="bi bi-airplane me-2"></i>Plan New Trip
-            </button>
-            <button className="btn-glass hero-cta-secondary" id="cta-explore">
+            </Link>
+            <Link to="/destinations" className="btn-glass hero-cta-secondary" id="cta-explore">
               <i className="bi bi-compass me-2"></i>Explore Destinations
-            </button>
+            </Link>
           </div>
           <div className="hero-quote fade-in-up delay-5">
             <i className="bi bi-quote hero-quote-icon"></i>

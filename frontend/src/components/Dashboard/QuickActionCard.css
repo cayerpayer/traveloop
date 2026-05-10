@@ -2,6 +2,7 @@
 
 .quick-action-card {
   position: relative;
+  min-width: 0;
   padding: 1.75rem 1.5rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -13,6 +14,12 @@
   flex-direction: column;
   gap: 0.75rem;
   opacity: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.quick-action-card:hover {
+  color: inherit;
 }
 
 .quick-action-card::before {

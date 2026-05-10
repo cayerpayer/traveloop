@@ -22,13 +22,16 @@ const SORT_OPTIONS = [
 const CATEGORY_FILTERS = ['All', 'Adventure', 'Luxury', 'Beach', 'Solo', 'Family', 'Road Trip', 'Backpacking'];
 
 export default function MyTripsPage() {
-  const { trips, deleteTrip } = useTrips();
+  const { trips, updateTrip, deleteTrip } = useTrips();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [sortBy, setSortBy] = useState('newest');
   const [deleteModal, setDeleteModal] = useState({ open: false, trip: null });
+  const [viewModal, setViewModal] = useState({ open: false, trip: null });
+  const [editModal, setEditModal] = useState({ open: false, trip: null });
+  const [editForm, setEditForm] = useState(null);
 
   // Stats
   const stats = useMemo(() => {
@@ -97,6 +100,54 @@ export default function MyTripsPage() {
     deleteTrip(deleteModal.trip.id);
     toast.success('Trip deleted');
     setDeleteModal({ open: false, trip: null });
+  };
+
+  const openEditModal = (trip) => {
+    setEditForm({
+      tripName: trip.tripName || '',
+      startDate: trip.startDate || '',
+      endDate: trip.endDate || '',
+      description: trip.description || '',
+      category: trip.category || '',
+      budget: trip.budget || 0,
+      privacy: trip.privacy || 'private',
+      status: trip.status || 'planning',
+    });
+    setEditModal({ open: true, trip });
+  };
+
+  const handleEditChange = (field, value) => {
+    setEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditSave = () => {
+    if (!editModal.trip || !editForm?.tripName.trim()) {
+      toast.error('Trip name is required');
+      return;
+    }
+
+    updateTrip(editModal.trip.id, editForm);
+    toast.success('Trip updated');
+    setEditModal({ open: false, trip: null });
+    setEditForm(null);
+  };
+
+  const handleShare = async (trip) => {
+    const shareUrl = `${window.location.origin}/shared/${trip.id}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: trip.tripName,
+          text: trip.description || 'Check out this trip on Traveloop.',
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success('Share link copied');
+      }
+    } catch {
+      toast.error('Unable to share this trip');
+    }
   };
 
   const getDuration = (start, end) => {
@@ -259,16 +310,19 @@ export default function MyTripsPage() {
 
                     {/* Actions */}
                     <div className="mtp-card-actions">
-                      <button className="mtp-action-btn view" title="View Details" id={`view-${trip.id}`}>
+                      <button type="button" className="mtp-action-btn view" title="View Details"
+                        onClick={() => setViewModal({ open: true, trip })} id={`view-${trip.id}`}>
                         <i className="bi bi-eye"></i>
                       </button>
-                      <button className="mtp-action-btn edit" title="Edit Trip" id={`edit-${trip.id}`}>
+                      <button type="button" className="mtp-action-btn edit" title="Edit Trip"
+                        onClick={() => openEditModal(trip)} id={`edit-${trip.id}`}>
                         <i className="bi bi-pencil"></i>
                       </button>
-                      <button className="mtp-action-btn share" title="Share Trip" id={`share-${trip.id}`}>
+                      <button type="button" className="mtp-action-btn share" title="Share Trip"
+                        onClick={() => handleShare(trip)} id={`share-${trip.id}`}>
                         <i className="bi bi-share"></i>
                       </button>
-                      <button className="mtp-action-btn delete" title="Delete Trip"
+                      <button type="button" className="mtp-action-btn delete" title="Delete Trip"
                         onClick={() => setDeleteModal({ open: true, trip })} id={`delete-${trip.id}`}>
                         <i className="bi bi-trash3"></i>
                       </button>
@@ -312,6 +366,84 @@ export default function MyTripsPage() {
               <button className="mtp-modal-cancel" onClick={() => setDeleteModal({ open: false, trip: null })}>Cancel</button>
               <button className="mtp-modal-delete" onClick={handleDelete} id="confirm-delete-btn">
                 <i className="bi bi-trash3 me-1"></i>Delete Trip
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewModal.open && (
+        <div className="mtp-modal-backdrop" onClick={() => setViewModal({ open: false, trip: null })}>
+          <div className="mtp-modal mtp-detail-modal" onClick={(e) => e.stopPropagation()} id="view-trip-modal">
+            <button className="mtp-modal-close" onClick={() => setViewModal({ open: false, trip: null })}>
+              <i className="bi bi-x-lg"></i>
+            </button>
+            <img
+              src={viewModal.trip?.coverImage || 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop'}
+              alt={viewModal.trip?.tripName}
+              className="mtp-detail-image"
+            />
+            <div className="mtp-detail-content">
+              <span className="mtp-detail-badge">{viewModal.trip?.status || 'draft'}</span>
+              <h3 className="mtp-modal-title">{viewModal.trip?.tripName}</h3>
+              <p className="mtp-modal-desc">{viewModal.trip?.description || 'No description added yet.'}</p>
+              <div className="mtp-detail-grid">
+                <span><i className="bi bi-calendar3"></i>{formatDate(viewModal.trip?.startDate)} - {formatDate(viewModal.trip?.endDate)}</span>
+                <span><i className="bi bi-clock"></i>{getDuration(viewModal.trip?.startDate, viewModal.trip?.endDate) || 0} days</span>
+                <span><i className="bi bi-wallet2"></i>{formatBudget(viewModal.trip?.budget)}</span>
+                <span><i className="bi bi-tag"></i>{viewModal.trip?.category || 'Uncategorized'}</span>
+              </div>
+              {viewModal.trip?.destinations?.length > 0 && (
+                <div className="mtp-detail-chip-row">
+                  {viewModal.trip.destinations.map((place) => <span key={place}>{place}</span>)}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editModal.open && editForm && (
+        <div className="mtp-modal-backdrop" onClick={() => { setEditModal({ open: false, trip: null }); setEditForm(null); }}>
+          <div className="mtp-modal mtp-edit-modal" onClick={(e) => e.stopPropagation()} id="edit-trip-modal">
+            <h3 className="mtp-modal-title">Edit Trip</h3>
+            <div className="mtp-edit-form">
+              <label>
+                Trip Name
+                <input value={editForm.tripName} onChange={(e) => handleEditChange('tripName', e.target.value)} />
+              </label>
+              <div className="mtp-edit-row">
+                <label>
+                  Start Date
+                  <input type="date" value={editForm.startDate} onChange={(e) => handleEditChange('startDate', e.target.value)} />
+                </label>
+                <label>
+                  End Date
+                  <input type="date" value={editForm.endDate} onChange={(e) => handleEditChange('endDate', e.target.value)} />
+                </label>
+              </div>
+              <label>
+                Description
+                <textarea rows={3} value={editForm.description} onChange={(e) => handleEditChange('description', e.target.value)} />
+              </label>
+              <div className="mtp-edit-row">
+                <label>
+                  Category
+                  <select value={editForm.category} onChange={(e) => handleEditChange('category', e.target.value)}>
+                    <option value="">Select category</option>
+                    {CATEGORY_FILTERS.filter((cat) => cat !== 'All').map((cat) => <option key={cat} value={cat}>{cat}</option>)}
+                  </select>
+                </label>
+                <label>
+                  Budget
+                  <input type="number" min="0" value={editForm.budget} onChange={(e) => handleEditChange('budget', Number(e.target.value))} />
+                </label>
+              </div>
+            </div>
+            <div className="mtp-modal-actions">
+              <button className="mtp-modal-cancel" onClick={() => { setEditModal({ open: false, trip: null }); setEditForm(null); }}>Cancel</button>
+              <button className="mtp-modal-save" onClick={handleEditSave}>
+                <i className="bi bi-check2 me-1"></i>Save Changes
               </button>
             </div>
           </div>

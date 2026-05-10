@@ -159,6 +159,7 @@ export const QUICK_ACTIONS_DATA = [
     title: 'Plan New Trip',
     description: 'Create a new travel itinerary',
     gradient: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
+    path: '/create-trip',
   },
   {
     id: 2,
@@ -166,6 +167,7 @@ export const QUICK_ACTIONS_DATA = [
     title: 'My Itineraries',
     description: 'View & manage your plans',
     gradient: 'linear-gradient(135deg, #06B6D4, #0EA5E9)',
+    path: '/trips',
   },
   {
     id: 3,
@@ -173,6 +175,7 @@ export const QUICK_ACTIONS_DATA = [
     title: 'Budget Tracker',
     description: 'Track expenses & savings',
     gradient: 'linear-gradient(135deg, #10B981, #059669)',
+    path: '/budget',
   },
   {
     id: 4,
@@ -180,6 +183,7 @@ export const QUICK_ACTIONS_DATA = [
     title: 'Shared Trips',
     description: 'Collaborate with friends',
     gradient: 'linear-gradient(135deg, #F59E0B, #F97316)',
+    path: '/shared',
   },
 ];
 

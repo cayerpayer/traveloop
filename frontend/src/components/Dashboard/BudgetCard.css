@@ -1,6 +1,7 @@
 /* BudgetCard Styles */
 
 .budget-card {
+  min-width: 0;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -59,15 +60,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   margin-bottom: 0.35rem;
 }
 
 .bc-value {
   font-family: var(--font-primary);
-  font-size: 1.65rem;
+  font-size: clamp(1.25rem, 2.4vw, 1.65rem);
   font-weight: 800;
   color: var(--color-light);
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .bc-label {
