@@ -7,6 +7,8 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../../context/TripContext';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
+import useTripStats from '../../hooks/useTripStats';
+import { formatCompactINR } from '../../utils/currency';
 import toast from 'react-hot-toast';
 import './CreateTripPage.css';
 
@@ -30,12 +32,14 @@ const TRAVEL_TAGS = ['Adventure', 'Beach', 'Mountains', 'Luxury', 'Backpacking',
 
 export default function CreateTripPage() {
   const { addTrip } = useTrips();
+  const stats = useTripStats();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     tripName: '',
     startDate: '',
     endDate: '',
+    destinations: '',
     description: '',
     category: '',
     budget: 50000,
@@ -87,6 +91,7 @@ export default function CreateTripPage() {
     if (!form.tripName.trim()) errs.tripName = 'Trip name is required';
     if (!form.startDate) errs.startDate = 'Start date is required';
     if (!form.endDate) errs.endDate = 'End date is required';
+    if (!form.destinations.trim()) errs.destinations = 'Add at least one destination';
     if (form.startDate && form.endDate && new Date(form.endDate) <= new Date(form.startDate)) {
       errs.endDate = 'End date must be after start date';
     }
@@ -107,6 +112,7 @@ export default function CreateTripPage() {
 
     const tripData = {
       ...form,
+      destinations: form.destinations.split(',').map((item) => item.trim()).filter(Boolean),
       status: isDraft ? 'draft' : 'planning',
       coverImage: form.coverImage || `https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800&h=500&fit=crop`,
     };
@@ -118,8 +124,7 @@ export default function CreateTripPage() {
   };
 
   const formatBudget = (val) => {
-    if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
-    return `₹${(val / 1000).toFixed(0)}K`;
+    return formatCompactINR(val);
   };
 
   return (
@@ -191,16 +196,16 @@ export default function CreateTripPage() {
             {/* Mini Stats */}
             <div className="ctp-mini-stats">
               <div className="ctp-mini-stat">
-                <span className="ctp-mini-val">50+</span>
+                <span className="ctp-mini-val">{stats.destinations}</span>
                 <span className="ctp-mini-label">Destinations</span>
               </div>
               <div className="ctp-mini-stat">
-                <span className="ctp-mini-val">10K+</span>
+                <span className="ctp-mini-val">{stats.totalTrips}</span>
                 <span className="ctp-mini-label">Trips Created</span>
               </div>
               <div className="ctp-mini-stat">
                 <span className="ctp-mini-val">4.9★</span>
-                <span className="ctp-mini-label">User Rating</span>
+                <span className="ctp-mini-label">Total Budget</span>
               </div>
             </div>
           </div>
@@ -232,6 +237,23 @@ export default function CreateTripPage() {
                   />
                 </div>
                 {errors.tripName && <span className="ctp-error">{errors.tripName}</span>}
+              </div>
+
+              {/* Destinations */}
+              <div className="ctp-field">
+                <label className="ctp-label">Destinations <span className="ctp-required">*</span></label>
+                <div className={`ctp-input-wrap ${errors.destinations ? 'error' : ''} ${form.destinations ? 'has-value' : ''}`}>
+                  <i className="bi bi-geo-alt ctp-input-icon"></i>
+                  <input
+                    type="text"
+                    className="ctp-input"
+                    placeholder="Goa, Jaipur, Manali"
+                    value={form.destinations}
+                    onChange={(e) => handleChange('destinations', e.target.value)}
+                    id="destinations-input"
+                  />
+                </div>
+                {errors.destinations && <span className="ctp-error">{errors.destinations}</span>}
               </div>
 
               {/* Dates */}

@@ -13,11 +13,11 @@ import BudgetCard from '../../components/Dashboard/BudgetCard';
 import ActivityTimeline from '../../components/Dashboard/ActivityTimeline';
 import TravelInsightCard from '../../components/Dashboard/TravelInsightCard';
 import FloatingActionButton from '../../components/Dashboard/FloatingActionButton';
+import useTripStats from '../../hooks/useTripStats';
+import { formatINR } from '../../utils/currency';
 
 import {
-  TRIPS_DATA,
   DESTINATIONS_DATA,
-  BUDGET_DATA,
   QUICK_ACTIONS_DATA,
   ACTIVITY_DATA,
   INSIGHTS_DATA,
@@ -25,16 +25,18 @@ import {
 
 import './DashboardPage.css';
 
-// Budget cards config
-const BUDGET_CARDS = [
-  { icon: 'bi-wallet2', label: 'Total Budget', value: BUDGET_DATA.totalBudget, trend: BUDGET_DATA.trends.budget, color: '#4F46E5', percentage: 100 },
-  { icon: 'bi-credit-card', label: 'Amount Spent', value: BUDGET_DATA.amountSpent, trend: BUDGET_DATA.trends.spent, color: '#F59E0B', percentage: Math.round((BUDGET_DATA.amountSpent / BUDGET_DATA.totalBudget) * 100) },
-  { icon: 'bi-piggy-bank', label: 'Savings', value: BUDGET_DATA.savings, trend: BUDGET_DATA.trends.savings, color: '#10B981', percentage: Math.round((BUDGET_DATA.savings / BUDGET_DATA.totalBudget) * 100) },
-  { icon: 'bi-calendar-check', label: 'Upcoming Expenses', value: BUDGET_DATA.upcomingExpenses, trend: BUDGET_DATA.trends.upcoming, color: '#06B6D4', percentage: Math.round((BUDGET_DATA.upcomingExpenses / BUDGET_DATA.totalBudget) * 100) },
-];
-
 export default function DashboardPage() {
   const tripsScrollRef = useRef(null);
+  const stats = useTripStats();
+  const spentPercentage = stats.totalBudget > 0 ? Math.round((stats.amountSpent / stats.totalBudget) * 100) : 0;
+  const remainingPercentage = stats.totalBudget > 0 ? Math.round((stats.remainingBudget / stats.totalBudget) * 100) : 0;
+  const upcomingPercentage = stats.totalBudget > 0 ? Math.round((stats.plannedBudget / stats.totalBudget) * 100) : 0;
+  const budgetCards = [
+    { icon: 'bi-wallet2', label: 'Total Budget', value: stats.totalBudget, trend: stats.hasTrips ? 'Live' : '₹0', color: '#4F46E5', percentage: stats.hasTrips ? 100 : 0 },
+    { icon: 'bi-credit-card', label: 'Amount Spent', value: stats.amountSpent, trend: stats.hasTrips ? `${spentPercentage}% used` : '₹0', color: '#F59E0B', percentage: spentPercentage },
+    { icon: 'bi-piggy-bank', label: 'Remaining', value: stats.remainingBudget, trend: stats.hasTrips ? `${remainingPercentage}% left` : '₹0', color: '#10B981', percentage: remainingPercentage },
+    { icon: 'bi-calendar-check', label: 'Upcoming Budget', value: stats.plannedBudget, trend: `${stats.upcoming} planned`, color: '#06B6D4', percentage: upcomingPercentage },
+  ];
 
   const scrollTrips = (dir) => {
     if (tripsScrollRef.current) {
@@ -85,9 +87,21 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="trips-scroll-container" ref={tripsScrollRef}>
-            {TRIPS_DATA.map((trip, i) => (
-              <TripCard key={trip.id} trip={trip} index={i} />
-            ))}
+            {stats.loading ? (
+              Array.from({ length: 3 }).map((_, i) => <div key={i} className="dash-card-skeleton"></div>)
+            ) : stats.upcomingTrips.length > 0 ? (
+              stats.upcomingTrips.map((trip, i) => (
+                <TripCard key={trip.id} trip={trip} index={i} />
+              ))
+            ) : (
+              <div className="dash-empty-wide">
+                <div className="dash-empty-icon"><i className="bi bi-airplane-engines"></i></div>
+                <div>
+                  <h3>No trips planned yet</h3>
+                  <p>Create your first journey and this dashboard will light up with live stats.</p>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
@@ -99,8 +113,8 @@ export default function DashboardPage() {
             </h2>
           </div>
           <div className="budget-grid">
-            {BUDGET_CARDS.map((card, i) => (
-              <BudgetCard key={i} {...card} index={i} />
+            {budgetCards.map((card, i) => (
+              <BudgetCard key={card.label} {...card} index={i} loading={stats.loading} formatValue={formatINR} />
             ))}
           </div>
         </section>

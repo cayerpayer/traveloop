@@ -32,6 +32,14 @@ export const addExpense = async (tripId, expense) => {
 };
 
 /**
+ * Update expense in budget.
+ */
+export const updateExpense = async (tripId, expenseId, expense) => {
+  const response = await api.put(`/budgets/${tripId}/expenses/${expenseId}`, expense);
+  return response.data;
+};
+
+/**
  * Delete expense from budget.
  */
 export const deleteExpense = async (tripId, expenseId) => {

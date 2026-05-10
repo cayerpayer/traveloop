@@ -11,6 +11,29 @@
   opacity: 0;
 }
 
+.budget-card.is-loading .bc-value,
+.budget-card.is-loading .bc-label {
+  position: relative;
+  color: transparent;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.budget-card.is-loading .bc-value::after,
+.budget-card.is-loading .bc-label::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  animation: budgetSkeleton 1.2s ease-in-out infinite;
+}
+
+@keyframes budgetSkeleton {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
 .budget-card:hover {
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(255, 255, 255, 0.12);

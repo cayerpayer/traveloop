@@ -4,6 +4,7 @@
    ============================================ */
 
 import './TripCard.css';
+import { formatCompactINR } from '../../utils/currency';
 
 export default function TripCard({ trip, index }) {
   return (
@@ -48,11 +49,11 @@ export default function TripCard({ trip, index }) {
         <div className="tcp-budget-row">
           <div className="tcp-budget-info">
             <span className="tcp-budget-label">Budget</span>
-            <span className="tcp-budget-value">${trip.budget.toLocaleString()}</span>
+            <span className="tcp-budget-value">{formatCompactINR(trip.budget)}</span>
           </div>
           <div className="tcp-budget-info">
             <span className="tcp-budget-label">Spent</span>
-            <span className="tcp-budget-spent">${trip.spent.toLocaleString()}</span>
+            <span className="tcp-budget-spent">{formatCompactINR(trip.spent)}</span>
           </div>
         </div>
 

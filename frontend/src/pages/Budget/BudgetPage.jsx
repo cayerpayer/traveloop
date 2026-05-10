@@ -1,62 +1,107 @@
 /* ============================================
-   BudgetPage — Travel finance dashboard
+   BudgetPage - Dynamic travel finance dashboard
    ============================================ */
 import { useMemo, useState } from 'react';
-import { useTrips } from '../../context/TripContext';
+import toast from 'react-hot-toast';
+import BudgetCharts from '../../components/Budget/BudgetCharts';
+import BudgetExpenseForm from '../../components/Budget/BudgetExpenseForm';
+import ExpenseHistory from '../../components/Budget/ExpenseHistory';
 import DashboardNavbar from '../../components/Dashboard/DashboardNavbar';
-import { BUDGET_CATEGORIES, EXPENSE_TRENDS } from '../../data/mockData';
-import { getDailyActivityCosts, getItineraryActivityCost, getItineraryForTripId } from '../../utils/itineraryStorage';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid, Legend } from 'recharts';
+import useBudgetExpenses, { EXPENSE_CATEGORIES } from '../../hooks/useBudgetExpenses';
+import useTripStats from '../../hooks/useTripStats';
+import { formatINR } from '../../utils/currency';
 import './BudgetPage.css';
 
-const COLORS = ['#4F46E5', '#06B6D4', '#F59E0B', '#10B981', '#EC4899', '#8B5CF6'];
+function getDateLabel(date) {
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.valueOf())) return 'Unknown';
+  return parsed.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+}
+
+function getCategoryMeta() {
+  return EXPENSE_CATEGORIES.reduce((acc, category) => {
+    acc[category.value] = category;
+    return acc;
+  }, {});
+}
+
+function buildCategoryData(expenses) {
+  const totals = EXPENSE_CATEGORIES.reduce((acc, category) => {
+    acc[category.value] = {
+      name: category.value,
+      value: 0,
+      count: 0,
+      color: category.color,
+      icon: category.icon,
+    };
+    return acc;
+  }, {});
+
+  expenses.forEach((expense) => {
+    const key = totals[expense.category] ? expense.category : 'Other';
+    totals[key].value += Number(expense.amount) || 0;
+    totals[key].count += 1;
+  });
+
+  return Object.values(totals);
+}
+
+function buildTrendData(expenses) {
+  const totalsByDate = expenses.reduce((acc, expense) => {
+    const date = expense.date || new Date().toISOString().slice(0, 10);
+    acc[date] = acc[date] || { date, dateLabel: getDateLabel(date), amount: 0, count: 0 };
+    acc[date].amount += Number(expense.amount) || 0;
+    acc[date].count += 1;
+    return acc;
+  }, {});
+
+  return Object.values(totalsByDate).sort((a, b) => new Date(a.date) - new Date(b.date));
+}
 
 export default function BudgetPage() {
-  const { trips, activeTrip } = useTrips();
   const [activeChart, setActiveChart] = useState('pie');
-  const selectedTrip = activeTrip || trips[0] || null;
-  const activeItinerary = selectedTrip ? getItineraryForTripId(selectedTrip.id) : null;
-  const itineraryActivityCost = getItineraryActivityCost(activeItinerary);
-  const totalBudget = selectedTrip?.budget || 8500;
-  const budgetCategories = useMemo(() => {
-    if (!itineraryActivityCost) return BUDGET_CATEGORIES;
-    return BUDGET_CATEGORIES.map((category) =>
-      category.id === 'activities' ? { ...category, amount: itineraryActivityCost } : category
-    );
-  }, [itineraryActivityCost]);
-  const expenseTrends = useMemo(() => {
-    if (!activeItinerary) return EXPENSE_TRENDS;
+  const [editingExpense, setEditingExpense] = useState(null);
+  const stats = useTripStats();
+  const { expenses, loading, tripOptions, addExpense, updateExpense, deleteExpense } = useBudgetExpenses();
 
-    const dailyActivityCosts = getDailyActivityCosts(activeItinerary);
-    return EXPENSE_TRENDS.map((day, index) => ({
-      ...day,
-      activities: dailyActivityCosts[index]?.activities || 0,
-    }));
-  }, [activeItinerary]);
-  const totalSpent = budgetCategories.reduce((s, c) => s + c.amount, 0);
+  const categoryMeta = useMemo(() => getCategoryMeta(), []);
+  const sortedExpenses = useMemo(() => (
+    [...expenses].sort((a, b) => new Date(b.date) - new Date(a.date))
+  ), [expenses]);
+  const categoryData = useMemo(() => buildCategoryData(expenses), [expenses]);
+  const trendData = useMemo(() => buildTrendData(expenses), [expenses]);
+
+  const totalBudget = stats.totalBudget;
+  const totalSpent = expenses.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
   const remaining = totalBudget - totalSpent;
-  const dailyAvg = Math.round(totalSpent / 7);
-  const overBudget = totalSpent > totalBudget;
+  const avgTrip = stats.totalTrips ? Math.round(totalSpent / stats.totalTrips) : 0;
+  const hasExpenses = expenses.length > 0;
+  const overBudget = totalBudget > 0 && totalSpent > totalBudget;
+  const maxTrendAmount = Math.max(...trendData.map((day) => day.amount), 1);
+  const topCategory = [...categoryData].sort((a, b) => b.value - a.value)[0];
 
   const summaryCards = [
-    { label: 'Total Budget', value: `$${totalBudget.toLocaleString()}`, icon: 'bi-wallet2', color: '#4F46E5', trend: '+12%' },
-    { label: 'Total Spent', value: `$${totalSpent.toLocaleString()}`, icon: 'bi-credit-card', color: '#06B6D4', trend: '+8%' },
-    { label: 'Remaining', value: `$${remaining.toLocaleString()}`, icon: 'bi-piggy-bank', color: remaining > 0 ? '#10B981' : '#EF4444', trend: remaining > 0 ? 'On Track' : 'Over!' },
-    { label: 'Daily Average', value: `$${dailyAvg}`, icon: 'bi-calendar-day', color: '#F59E0B', trend: '~$95/day' },
+    { label: 'Total Budget', value: formatINR(totalBudget), icon: 'bi-wallet2', color: '#4F46E5', trend: stats.hasTrips ? `${stats.totalTrips} trips` : 'No trips yet' },
+    { label: 'Total Spent', value: formatINR(totalSpent), icon: 'bi-credit-card', color: '#06B6D4', trend: hasExpenses ? `${expenses.length} expenses` : 'No spend yet' },
+    { label: 'Remaining', value: formatINR(remaining), icon: 'bi-piggy-bank', color: remaining >= 0 ? '#10B981' : '#EF4444', trend: remaining >= 0 ? 'On track' : 'Over budget' },
+    { label: 'Avg / Trip', value: formatINR(avgTrip), icon: 'bi-calendar-day', color: '#F59E0B', trend: stats.totalTrips ? 'Based on expenses' : 'No trips yet' },
   ];
 
-  const pieData = budgetCategories.map(c => ({ name: c.name, value: c.amount }));
-
-  const customTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bp-tooltip">
-          <p className="bp-tooltip-label">{payload[0].name || payload[0].dataKey}</p>
-          <p className="bp-tooltip-value">${payload[0].value?.toLocaleString()}</p>
-        </div>
-      );
+  const handleExpenseSubmit = (expenseData) => {
+    if (editingExpense) {
+      updateExpense(editingExpense.id, expenseData);
+      setEditingExpense(null);
+      toast.success('Expense updated');
+      return;
     }
-    return null;
+    addExpense(expenseData);
+    toast.success('Expense added');
+  };
+
+  const handleDelete = (expenseId) => {
+    deleteExpense(expenseId);
+    if (editingExpense?.id === expenseId) setEditingExpense(null);
+    toast.success('Expense deleted');
   };
 
   return (
@@ -66,20 +111,26 @@ export default function BudgetPage() {
       <main className="container budget-main">
         <div className="bp-header fade-in-up">
           <h1 className="bp-title">Budget <span className="gradient-text">Dashboard</span></h1>
-          <p className="bp-subtitle">Track expenses and optimize your travel budget</p>
+          <p className="bp-subtitle">Track real expenses and optimize your travel budget</p>
         </div>
+
+        {loading && (
+          <div className="bp-loading fade-in-up">
+            <span className="spinner-border spinner-border-sm"></span>
+            <span>Loading budget data...</span>
+          </div>
+        )}
 
         {overBudget && (
           <div className="bp-alert fade-in-up">
             <i className="bi bi-exclamation-triangle-fill"></i>
-            <span>You're over budget! Consider reducing shopping or activity costs.</span>
+            <span>You are over budget by {formatINR(Math.abs(remaining))}. Review high-spend categories below.</span>
           </div>
         )}
 
-        {/* Summary Cards */}
         <div className="bp-summary-grid">
           {summaryCards.map((card, i) => (
-            <div key={i} className="bp-summary-card fade-in-up" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
+            <div key={card.label} className="bp-summary-card fade-in-up" style={{ animationDelay: `${0.1 + i * 0.1}s` }}>
               <div className="bp-summary-icon" style={{ background: `${card.color}18`, color: card.color }}><i className={`bi ${card.icon}`}></i></div>
               <div className="bp-summary-info">
                 <span className="bp-summary-label">{card.label}</span>
@@ -90,107 +141,103 @@ export default function BudgetPage() {
           ))}
         </div>
 
-        {/* Charts */}
-        <div className="bp-charts-section fade-in-up delay-2">
-          <div className="bp-charts-header">
-            <h3 className="cs-section-title"><i className="bi bi-bar-chart-line me-2"></i>Expense Analysis</h3>
-            <div className="bp-chart-tabs">
-              {[{ key: 'pie', icon: 'bi-pie-chart' }, { key: 'bar', icon: 'bi-bar-chart' }, { key: 'line', icon: 'bi-graph-up' }].map(t => (
-                <button key={t.key} className={`bp-chart-tab ${activeChart === t.key ? 'active' : ''}`} onClick={() => setActiveChart(t.key)}>
-                  <i className={`bi ${t.icon}`}></i>
-                </button>
+        <section className="bp-workspace fade-in-up delay-1">
+          <BudgetExpenseForm
+            key={editingExpense?.id || 'new-expense'}
+            editingExpense={editingExpense}
+            tripOptions={tripOptions}
+            onSubmit={handleExpenseSubmit}
+            onCancel={() => setEditingExpense(null)}
+          />
+
+          <div className="bp-category-panel">
+            <div className="bp-panel-head">
+              <div>
+                <h3 className="cs-section-title"><i className="bi bi-grid-3x3-gap me-2"></i>Categories</h3>
+                <p>Live totals from entered expenses.</p>
+              </div>
+            </div>
+            <div className="bp-category-list">
+              {categoryData.map((category) => (
+                <div className="bp-category-item" key={category.name}>
+                  <span className="bp-category-icon" style={{ background: `${category.color}18`, color: category.color }}>
+                    <i className={`bi ${category.icon}`}></i>
+                  </span>
+                  <div>
+                    <span>{category.name}</span>
+                    <small>{category.count} expense{category.count === 1 ? '' : 's'}</small>
+                  </div>
+                  <strong>{formatINR(category.value)}</strong>
+                </div>
               ))}
             </div>
           </div>
+        </section>
 
-          <div className="bp-chart-container">
-            {activeChart === 'pie' && (
-              <ResponsiveContainer width="100%" height={320}>
-                <PieChart>
-                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={70} outerRadius={120} paddingAngle={3} dataKey="value">
-                    {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip content={customTooltip} />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-            {activeChart === 'bar' && (
-              <ResponsiveContainer width="100%" height={320}>
-                <BarChart data={budgetCategories.map(c => ({ name: c.name, amount: c.amount }))}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="name" tick={{ fill: '#94A3B8', fontSize: 12 }} />
-                  <YAxis tick={{ fill: '#94A3B8', fontSize: 12 }} />
-                  <Tooltip content={customTooltip} />
-                  <Bar dataKey="amount" radius={[6, 6, 0, 0]}>
-                    {budgetCategories.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-            {activeChart === 'line' && (
-              <ResponsiveContainer width="100%" height={320}>
-                <LineChart data={expenseTrends}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
-                  <XAxis dataKey="day" tick={{ fill: '#94A3B8', fontSize: 12 }} />
-                  <YAxis tick={{ fill: '#94A3B8', fontSize: 12 }} />
-                  <Tooltip />
-                  <Legend />
-                  <Line type="monotone" dataKey="flights" stroke="#4F46E5" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="hotels" stroke="#06B6D4" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="food" stroke="#F59E0B" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="activities" stroke="#10B981" strokeWidth={2} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-          </div>
+        <BudgetCharts
+          activeChart={activeChart}
+          categoryData={categoryData}
+          trendData={trendData}
+          hasExpenses={hasExpenses}
+          onChartChange={setActiveChart}
+        />
 
-          {/* Legend */}
-          <div className="bp-legend">
-            {budgetCategories.map((c, i) => (
-              <div key={c.id} className="bp-legend-item">
-                <span className="bp-legend-dot" style={{ background: COLORS[i] }}></span>
-                <span className="bp-legend-name">{c.name}</span>
-                <span className="bp-legend-val">${c.amount}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Day-wise Breakdown */}
         <div className="bp-daywise fade-in-up delay-3">
-          <h3 className="cs-section-title"><i className="bi bi-calendar3 me-2"></i>Day-wise Breakdown</h3>
-          <div className="bp-daywise-list">
-            {expenseTrends.map((d, i) => {
-              const dayTotal = d.flights + d.hotels + d.food + d.activities + d.transport;
-              return (
-                <div key={i} className="bp-day-row">
-                  <span className="bp-day-label">{d.day}</span>
+          <h3 className="cs-section-title"><i className="bi bi-calendar3 me-2"></i>Spending Trend</h3>
+          {trendData.length === 0 ? (
+            <div className="bp-empty-state">
+              <i className="bi bi-graph-up"></i>
+              <span>Daily spending appears once expenses are added.</span>
+            </div>
+          ) : (
+            <div className="bp-daywise-list">
+              {trendData.map((day) => (
+                <div key={day.date} className="bp-day-row">
+                  <span className="bp-day-label">{day.dateLabel}</span>
                   <div className="bp-day-bar-wrap">
-                    <div className="bp-day-bar" style={{ width: `${(dayTotal / 2000) * 100}%` }}></div>
+                    <div className="bp-day-bar" style={{ width: `${Math.max(6, (day.amount / maxTrendAmount) * 100)}%` }}></div>
                   </div>
-                  <span className="bp-day-total">${dayTotal}</span>
+                  <span className="bp-day-total">{formatINR(day.amount)}</span>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Smart Insights */}
-        <div className="bp-insights fade-in-up delay-4">
+        <ExpenseHistory
+          expenses={sortedExpenses}
+          categoryMeta={categoryMeta}
+          tripOptions={tripOptions}
+          onEdit={setEditingExpense}
+          onDelete={handleDelete}
+        />
+
+        <div className="bp-insights fade-in-up delay-5">
           <h3 className="cs-section-title"><i className="bi bi-lightbulb me-2"></i>Smart Savings Tips</h3>
-          <div className="bp-insights-grid">
-            {[
-              { icon: 'bi-airplane', tip: 'Book flights 3 weeks early to save up to 25%', savings: '$320' },
-              { icon: 'bi-cup-hot', tip: 'Try local street food to cut food costs by 40%', savings: '$180' },
-              { icon: 'bi-bus-front', tip: 'Use public transport instead of taxis', savings: '$95' },
-            ].map((ins, i) => (
-              <div key={i} className="bp-insight-card">
-                <div className="bp-insight-icon"><i className={`bi ${ins.icon}`}></i></div>
-                <p className="bp-insight-tip">{ins.tip}</p>
-                <span className="bp-insight-save">Save {ins.savings}</span>
+          {hasExpenses ? (
+            <div className="bp-insights-grid">
+              <div className="bp-insight-card">
+                <div className="bp-insight-icon"><i className={`bi ${categoryMeta[topCategory?.name]?.icon || 'bi-wallet2'}`}></i></div>
+                <p className="bp-insight-tip">Your highest spend is {topCategory?.name} at {formatINR(topCategory?.value)}.</p>
+                <span className="bp-insight-save">Review first</span>
               </div>
-            ))}
-          </div>
+              <div className="bp-insight-card">
+                <div className="bp-insight-icon"><i className="bi bi-piggy-bank"></i></div>
+                <p className="bp-insight-tip">{remaining >= 0 ? `${formatINR(remaining)} remains in your trip budget.` : `You are ${formatINR(Math.abs(remaining))} over budget.`}</p>
+                <span className="bp-insight-save">{remaining >= 0 ? 'Healthy buffer' : 'Needs action'}</span>
+              </div>
+              <div className="bp-insight-card">
+                <div className="bp-insight-icon"><i className="bi bi-receipt-cutoff"></i></div>
+                <p className="bp-insight-tip">Your average expense is {formatINR(Math.round(totalSpent / expenses.length))}.</p>
+                <span className="bp-insight-save">Live average</span>
+              </div>
+            </div>
+          ) : (
+            <div className="bp-empty-state">
+              <i className="bi bi-stars"></i>
+              <span>Add expenses to receive budget insights based on your real spending.</span>
+            </div>
+          )}
         </div>
       </main>
     </div>
